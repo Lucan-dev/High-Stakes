@@ -5,11 +5,11 @@
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
 /* ---------------------------- Drivetrain Motors --------------------------- */
-pros::Motor left_front(-2, pros::E_MOTOR_GEAR_BLUE); // port 1, reversed, blue cart
-pros::Motor left_back(-12, pros::E_MOTOR_GEAR_BLUE); // port 2, reversed, blue cart
+pros::Motor left_front(9, pros::E_MOTOR_GEAR_BLUE); // port 1, reversed, blue cart
+pros::Motor left_back(19, pros::E_MOTOR_GEAR_BLUE); // port 2, reversed, blue cart
 
-pros::Motor right_front(9, pros::E_MOTOR_GEAR_BLUE); // port 3, forwards, blue cart
-pros::Motor right_back(19, pros::E_MOTOR_GEAR_BLUE); // port 4, forwards, blue cart
+pros::Motor right_front(-5, pros::E_MOTOR_GEAR_BLUE); // port 3, forwards, blue cart
+pros::Motor right_back(-15, pros::E_MOTOR_GEAR_BLUE); // port 4, forwards, blue cart
 
 /* ------------------------------ Motor Groups ------------------------------ */
 pros::MotorGroup left_drive({left_front, left_back});
@@ -19,7 +19,7 @@ pros::MotorGroup right_drive({right_front, right_back});
 pros::Imu inertial(14);
 
 pros::Rotation vert_rotation(18, true); // port 18, reversed
-pros::Rotation hor_rotation(20, false); // port 20, forwards
+pros::Rotation hor_rotation(21, false); // port 20, forwards
 
 /* -------------------------- Tracking Wheel Setup -------------------------- */
 lemlib::TrackingWheel vert_tracking_wheel(&vert_rotation, lemlib::Omniwheel::NEW_275, -1);
@@ -54,7 +54,7 @@ lemlib::ControllerSettings lateral_controller(
     100,	// small error range timeout, in milliseconds
     3, 		// large error range, in inches
 	500, 	// large error range timeout, in milliseconds
-    20 		// maximum acceleration (slew)
+    0 		// maximum acceleration (slew)
 );
 
 lemlib::ControllerSettings angular_controller(
@@ -108,6 +108,10 @@ void competition_initialize() {}
 void autonomous() {}
 
 void opcontrol() {
+    /* ----------------------------- Motor Stopping ----------------------------- */
+    left_drive.set_brake_modes(pros::E_MOTOR_BRAKE_HOLD);
+    right_drive.set_brake_modes(pros::E_MOTOR_BRAKE_HOLD);
+
 	while (true) {
 		/* --------------------------- Drivetrain Control --------------------------- */
         // Get joystick positions
@@ -123,8 +127,8 @@ void opcontrol() {
         }
 
         // Move motors
-        left_drive.move(leftY + rightX);
-        right_drive.move(leftY - rightX);
+        left_drive.move(leftY - rightX);
+        right_drive.move(leftY + rightX);
 
 		// Delay to save resources
 		pros::delay(20);
