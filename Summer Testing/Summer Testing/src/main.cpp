@@ -5,21 +5,21 @@
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
 /* ---------------------------- Drivetrain Motors --------------------------- */
-pros::Motor left_front(9, pros::E_MOTOR_GEAR_BLUE); // port 1, reversed, blue cart
-pros::Motor left_back(19, pros::E_MOTOR_GEAR_BLUE); // port 2, reversed, blue cart
+pros::Motor left_front(-9, pros::E_MOTOR_GEAR_BLUE);     // port 1, reversed, blue cart
+pros::Motor left_back(-19, pros::E_MOTOR_GEAR_BLUE);     // port 2, reversed, blue cart
 
-pros::Motor right_front(-5, pros::E_MOTOR_GEAR_BLUE); // port 3, forwards, blue cart
-pros::Motor right_back(-15, pros::E_MOTOR_GEAR_BLUE); // port 4, forwards, blue cart
+pros::Motor right_front(5, pros::E_MOTOR_GEAR_BLUE);   // port 3, forwards, blue cart
+pros::Motor right_back(15, pros::E_MOTOR_GEAR_BLUE);   // port 4, forwards, blue cart
 
 /* ------------------------------ Motor Groups ------------------------------ */
 pros::MotorGroup left_drive({left_front, left_back});
 pros::MotorGroup right_drive({right_front, right_back});
 
 /* --------------------------------- Sensors -------------------------------- */
-pros::Imu inertial(14);
+pros::Imu inertial(20);
 
-pros::Rotation vert_rotation(18, true); // port 18, reversed
-pros::Rotation hor_rotation(21, false); // port 20, forwards
+pros::Rotation vert_rotation(11, true);    // forwards
+pros::Rotation hor_rotation(21, true);     // forwards
 
 /* -------------------------- Tracking Wheel Setup -------------------------- */
 lemlib::TrackingWheel vert_tracking_wheel(&vert_rotation, lemlib::Omniwheel::NEW_275, -1);
@@ -46,34 +46,35 @@ lemlib::OdomSensors sensors(
 
 /* -------------------------------- PID Setup ------------------------------- */
 lemlib::ControllerSettings lateral_controller(
-	10,		// proportional gain (kP)
-    0,		// integral gain (kI)
-    3,		// derivative gain (kD)
-    3,		// anti windup
-    1,		// small error range, in inches
-    100,	// small error range timeout, in milliseconds
-    3, 		// large error range, in inches
-	500, 	// large error range timeout, in milliseconds
-    0 		// maximum acceleration (slew)
+	8,		// Proportional gain (kP)
+    0,		// Integral gain (kI)
+    60,		// Derivative gain (kD)
+    0,		// Anti windup
+    1,		// Small error range, in inches
+    100,	// Small error range timeout, in milliseconds
+    3, 		// Large error range, in inches
+	500, 	// Large error range timeout, in milliseconds
+    4 		// Maximum acceleration (slew)
 );
 
 lemlib::ControllerSettings angular_controller(
-	2, 		// proportional gain (kP)
-    0, 		// integral gain (kI)
-    10, 	// derivative gain (kD)
-    3, 		// anti windup
-    1, 		// small error range, in degrees
-    100, 	// small error range timeout, in milliseconds
-    3, 		// large error range, in degrees
-    500, 	// large error range timeout, in milliseconds
-    0 		// maximum acceleration (slew)
+	2, 		// Proportional gain (kP)
+    0, 		// Integral gain (kI)
+    17, 	// Derivative gain (kD)
+    0, 		// Anti windup
+    1, 		// Small error range, in degrees
+    100, 	// Small error range timeout, in milliseconds
+    3, 		// Large error range, in degrees
+    500, 	// Large error range timeout, in milliseconds
+    0 		// Maximum acceleration (slew)
 );
 
 /* ----------------------------- Create Chassis ----------------------------- */
-lemlib::Chassis chassis(drivetrain, // drivetrain settings
-                        lateral_controller, // lateral PID settings
-                        angular_controller, // angular PID settings
-                        sensors // odometry sensors
+lemlib::Chassis chassis(
+    drivetrain,         // Drivetrain settings
+    lateral_controller, // Lateral PID settings
+    angular_controller, // Angular PID settings
+    sensors             // Odometry sensors
 );
 
 
@@ -87,6 +88,10 @@ int dead_zone = 5;
 void initialize() {
 	pros::lcd::initialize();
     chassis.calibrate();
+
+    /* ----------------------------- Motor Stopping ----------------------------- */
+    left_drive.set_brake_modes(pros::E_MOTOR_BRAKE_HOLD);
+    right_drive.set_brake_modes(pros::E_MOTOR_BRAKE_HOLD);
 	
     pros::Task screen_task([&]() {
         while (true) {
@@ -105,13 +110,11 @@ void disabled() {}
 
 void competition_initialize() {}
 
-void autonomous() {}
+void autonomous() {
+    chassis.turnToHeading(180, 2000);
+}
 
 void opcontrol() {
-    /* ----------------------------- Motor Stopping ----------------------------- */
-    left_drive.set_brake_modes(pros::E_MOTOR_BRAKE_HOLD);
-    right_drive.set_brake_modes(pros::E_MOTOR_BRAKE_HOLD);
-
 	while (true) {
 		/* --------------------------- Drivetrain Control --------------------------- */
         // Get joystick positions
@@ -127,8 +130,8 @@ void opcontrol() {
         }
 
         // Move motors
-        left_drive.move(leftY - rightX);
-        right_drive.move(leftY + rightX);
+        left_drive.move(leftY + rightX);
+        right_drive.move(leftY - rightX);
 
 		// Delay to save resources
 		pros::delay(20);
