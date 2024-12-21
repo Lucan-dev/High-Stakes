@@ -161,11 +161,10 @@ void autonomous() {
     chassis.turnToHeading(265, 700);
     chassis.moveToPose(-57, -58, 201, 2000, {.minSpeed = 60});
     chassis.waitUntilDone();
-    pros::delay(300);
+    pros::delay(200);
 
     chassis.turnToHeading(375, 800, {.maxSpeed = 70});
     chassis.moveToPose(-48, 2, -3, 2200);
-    pros::delay(500);
 
     chassis.turnToHeading(-115, 600);
     chassis.moveToPoint(-59, -9, 600);
@@ -178,19 +177,24 @@ void autonomous() {
 
     // 2nd goal
     intake.move(-127);
-    chassis.moveToPoint(-60, -6, 1000);
-    chassis.turnToPoint(14, -4, 1000, {.forwards = false});
-    chassis.moveToPoint(14, -4, 2000, {.forwards = false});
+    chassis.moveToPoint(-60, -8, 1000);
 
-    chassis.turnToHeading(-80, 800, {.minSpeed = 70});
-    chassis.turnToHeading(-90, 800, {.minSpeed = 70});
-    chassis.moveToPoint(21, -4, 1000, {.maxSpeed = 60});
+    chassis.turnToPoint(1, 4, 1000, {.forwards = false});
+    chassis.moveToPoint(1, 4, 2000, {.forwards = false});
+
+    chassis.turnToPoint(20.5, -0.5, 1000, {.forwards = false});
+    chassis.moveToPoint(20.5, -0.5, 1500, {.forwards = false, .maxSpeed = 70});
 
     chassis.waitUntilDone();
     clamp.set_value(true);
 
+    // Coast
+    chassis.waitUntilDone();
+    pros::delay(200);
+    chassis.setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
+
     // 6 rings
-    pros::delay(300);
+    pros::delay(200);
     chassis.turnToPoint(27, -23, 700);
     chassis.moveToPoint(27, -23, 1000);
     intake.move(127);
@@ -198,11 +202,10 @@ void autonomous() {
     chassis.turnToHeading(85, 700);
     chassis.moveToPose(65, -58, 159, 2000, {.minSpeed = 60});
     chassis.waitUntilDone();
-    pros::delay(300);
+    pros::delay(200);
 
     chassis.turnToHeading(-17, 800, {.maxSpeed = 70});
     chassis.moveToPose(52, 9, 1, 2200);
-    pros::delay(500);
 
     chassis.turnToPoint(65, -2.5, 700);
     chassis.moveToPoint(65, -2.5, 700);
@@ -233,7 +236,7 @@ void autonomous() {
     intake.brake();
 
     // Wall stake
-    chassis.moveToPoint(60, -51, 1000, {.forwards = false, .maxSpeed = 60});
+    chassis.moveToPoint(60, -52, 1000, {.forwards = false});
     while (arm.get_position() <= 2300) {
         arm.move(127);
         pros::delay(20);
@@ -242,17 +245,17 @@ void autonomous() {
     arm.brake();
 
     chassis.turnToHeading(90, 700, {.maxSpeed = 60});
-    chassis.moveToPoint(72.5, -51, 1000, {.maxSpeed = 60});
+    chassis.moveToPoint(73, -52, 1200, {.maxSpeed = 60});
     chassis.waitUntilDone();
 
-    while (arm.get_position() > 1600) {
+    while (arm.get_position() > 1800) {
         arm.move(-127);
         pros::delay(20);
     }
     arm.brake();
 
     // Ring
-    chassis.moveToPoint(63, -52, 800, {.forwards = false});
+    chassis.moveToPoint(63, -52, 1000, {.forwards = false});
 
     chassis.turnToPoint(31, -79, 800);
     intake.move(127);
@@ -266,46 +269,98 @@ void autonomous() {
     arm.move(0);
 
     chassis.waitUntilDone();
-    pros::delay(200);
     intake.brake();
 
-    // Goal
+    // Push 3rd goal into corner Goal
     chassis.turnToPoint(24, -105.5, 800);
     chassis.moveToPoint(24, -105.5, 1000);
 
-    chassis.turnToHeading(129.5, 1000);
-    chassis.moveToPose(66, -115.5, 88.5, 2000, {.minSpeed = 90});
+    chassis.turnToHeading(132, 1000);
+    chassis.moveToPose(66, -115.5, 88.5, 2000, {.minSpeed = 120});
 
-    // // 3 rings
-    // chassis.moveToPose(37, -106, 478, 1500, {.forwards = false, .minSpeed = 80});
-    // intake.move(127);
-    // chassis.turnToPoint(59, -99, 800);
-    // chassis.moveToPoint(59, -99, 1000);
-    
-    // chassis.turnToHeading(250, 900);
-    // chassis.moveToPose(-16, -83, 676, 3000, {.minSpeed = 60});
+    // Corner ring
+    chassis.moveToPoint(49, -117, 1000, {.forwards = false});
 
-    // chassis.waitUntilDone();
-    // pros::delay(500);
+    chassis.waitUntilDone();
+    intake.move(90);
+    while (distance.get() >= 40) {
+        pros::delay(30);
+    }
+    intake.brake();
+    intake.set_zero_position(0);
 
-    // // Place goal in corner
-    // chassis.moveToPoint(-11, -92, 800, {.forwards = false});
+    while (intake.get_position() >= -1700) {
+        intake.move(-127);
+        pros::delay(20);
+    }
+    intake.brake();
 
-    // chassis.turnToPoint(-49, -98, 800, {.forwards = false});
-    // chassis.moveToPoint(-49, -98, 1000, {.forwards = false});
-    // intake.brake();
+    chassis.turnToPoint(59, -104, 1000, {.minSpeed = 5});
+    chassis.moveToPoint(59, -104, 1000, {.minSpeed = 20});
+    intake.move(127);
 
-    // chassis.turnToHeading(755, 800);
-    // pros::delay(100);
-    // clamp.set_value(false);
-    // chassis.moveToPose(-55, -135, 0, 1500, {.forwards = false, .minSpeed = 70});
+    // Pick up 4th goal
+    chassis.waitUntilDone();
+    intake.brake();
 
-    // // Get 2nd wall stake ring
-    // chassis.turnToPoint(-42, -64.5, 800);
-    // chassis.moveToPoint(-42, -64.5, 3000, {.maxSpeed = 60});
-    // intake.move(127);
+    chassis.turnToPoint(22, -105, 1000, {.forwards = false});
+    chassis.moveToPoint(22, -105, 1200, {.forwards = false});
 
-    // while (distance.get() >= 40) {
+    while (arm.get_position() <= 2300) {
+        arm.move(127);
+        pros::delay(20);
+    }
+    arm.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+    arm.brake();
+
+    chassis.moveToPoint(10, -105, 1000, {.forwards = false, .maxSpeed = 70});
+
+    chassis.waitUntilDone();
+    clamp.set_value(true);
+
+    // Blue wall stake
+    chassis.turnToHeading(180, 1000, {.maxSpeed = 100});
+    chassis.moveToPoint(11, -117, 1000, {.maxSpeed = 100});
+
+    chassis.waitUntilDone();
+    arm.move(-127);
+    while (arm.get_position() >= 900) {
+        pros::delay(50);
+    }
+    arm.brake();
+
+    // 2 rings
+    chassis.moveToPoint(9, -100, 800, {.forwards = false});
+    chassis.turnToPoint(-11.5, -85, 800);
+    intake.move(127);
+    chassis.moveToPoint(-11.5, -85, 1000);
+
+    arm.move(-127);
+    while (arm.get_position() > 10) {
+        pros::delay(30);
+    }
+    arm.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+    arm.move(0);
+
+    chassis.waitUntilDone();
+    pros::delay(200);
+    chassis.turnToPoint(-42.5, -105.5, 900);
+    chassis.moveToPoint(-42.5, -105.5, 1000);
+
+    // Place goal in corner
+    chassis.turnToPoint(-54, -130, 900, {.forwards = false, .direction = AngularDirection::CCW_COUNTERCLOCKWISE});
+    chassis.moveToPoint(-54, -130, 800, {.forwards = false});
+    chassis.waitUntilDone();
+    clamp.set_value(false);
+
+    chassis.waitUntilDone();
+    intake.move(-127);
+    pros::delay(100);
+
+    // Get 2nd wall stake ring
+    chassis.moveToPoint(-42, -62, 3000);
+
+    // while (distance.get() >= 60) {
     //     intake.move(127);
     //     pros::delay(30);
     // }
@@ -320,8 +375,8 @@ void autonomous() {
 
     // chassis.waitUntilDone();
 
-    // // 2nd wall stake
-    // chassis.turnToPoint(-66, -64.5, 1000, {.maxSpeed = 60});
+    // // 2nd neutral wall stake
+    // chassis.turnToPoint(-66, -62, 1000);
 
     // while (arm.get_position() <= 2300) {
     //     arm.move(127);
@@ -330,7 +385,7 @@ void autonomous() {
     // arm.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
     // arm.brake();
 
-    // chassis.moveToPoint(-66.5, -64.5, 2000, {.maxSpeed = 80});
+    // chassis.moveToPoint(-66.5, -62, 2000, {.maxSpeed = 100});
     // chassis.waitUntilDone();
 
     // while (arm.get_position() > 1700) {
@@ -340,8 +395,7 @@ void autonomous() {
     // arm.brake();
 
     // // Leave
-    // pros::delay(200);
-    // chassis.moveToPoint(-55, -66, 2000, {.forwards = false});
+    // chassis.moveToPoint(-55, -62, 2000, {.forwards = false});
 
     // Coast
     chassis.waitUntilDone();
@@ -387,8 +441,8 @@ void opcontrol() {
     // Goal
     chassis.moveToPoint(0, 1, 600, {.forwards = false});
 
-    chassis.turnToPoint(-17, -4.5, 600, {.forwards = false});
-    chassis.moveToPoint(-17, -4.5, 1000, {.forwards = false, .maxSpeed = 60});
+    // chassis.turnToPoint(-17, -4.5, 600, {.forwards = false});
+    // chassis.moveToPoint(-17, -4.5, 1000, {.forwards = false, .maxSpeed = 60});
 
     arm.move(-127);
     while (arm.get_position() > 10) {
@@ -398,8 +452,8 @@ void opcontrol() {
     arm.move(0);
 
     chassis.waitUntilDone();
-    clamp.set_value(true);
-    clamp_down = true;
+    // clamp.set_value(true);
+    // clamp_down = true;
 
     // loop forever
     while (true) {

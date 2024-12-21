@@ -15,7 +15,6 @@ pros::MotorGroup left_drive({-15, -14, -16}, pros::MotorGearset::blue);
 pros::MotorGroup right_drive({17, 18, 19}, pros::MotorGearset::blue);
 
 pros::Motor intake(-20, pros::MotorGearset::blue);
-
 pros::Motor arm(-10, pros::MotorGearset::red);
 
 /* --------------------------------- Sensors -------------------------------- */

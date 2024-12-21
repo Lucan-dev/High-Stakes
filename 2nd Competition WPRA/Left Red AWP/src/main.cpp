@@ -196,7 +196,7 @@ void opcontrol() {
                 intake_speed = -100;
 
             } else if (intake_speed == -100) {
-                if (intake.get_position() <= -800) {
+                if (intake.get_position() <= -1500) {
                     intake_speed = 0;
                     automatic_intake = false;
                 }
@@ -224,14 +224,14 @@ void opcontrol() {
         } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)) {
             arm_speed = -127;
 
-        } else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
+        } else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)) {
             if (arm.get_position() < 2100) {
                 arm_speed = 128;
             } else if (arm.get_position() > 2200) {
                 arm_speed = -128;
             }
 
-        } else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)) {
+        } else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
             arm_speed = -129;
 
         } else if (arm_speed == 128) {
