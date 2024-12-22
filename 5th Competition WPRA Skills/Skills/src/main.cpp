@@ -310,13 +310,13 @@ void autonomous() {
     intake.move(127);
 
     // Push 3rd goal into corner
-    chassis.turnToPoint(-21, 129, 1000);
+    chassis.turnToPoint(-21, 128, 1000);
     pros::delay(100);
     intake.brake();
-    chassis.moveToPoint(-21, 129, 1000);
+    chassis.moveToPoint(-21, 128, 1000);
 
     chassis.swingToHeading(-80, lemlib::DriveSide::LEFT, 1200);
-    chassis.moveToPoint(-50, 140, 1200);
+    chassis.moveToPoint(-51, 140, 1200);
 
     // Get 4th goal
     chassis.moveToPoint(0, 124, 4000, {.forwards = false, .maxSpeed = 60});
@@ -325,40 +325,30 @@ void autonomous() {
 
     // 1 ring
     pros::delay(200);
-    chassis.turnToPoint(24, 99, 1000);
-    chassis.moveToPoint(24, 99, 1000);
+    chassis.turnToPoint(24, 98, 1000);
+    chassis.moveToPoint(24, 98, 1000);
     intake.move(127);
 
     // Place goal in corner
-    chassis.turnToPoint(61, 92, 1000);
-    chassis.moveToPoint(61, 92, 1000);
+    chassis.turnToPoint(61, 94, 1000);
+    chassis.moveToPoint(61, 94, 1000);
 
-    pros::delay(999999);
-
-    chassis.turnToPoint(65, 123, 1000, {.forwards = false});
-    chassis.moveToPoint(65, 123, 1000, {.forwards = false});
-    chassis.waitUntilDone();
+    chassis.turnToPoint(67, 120, 1000, {.forwards = false});
     intake.move(-127);
+
+    chassis.waitUntilDone();
+    intake.brake();
+    clamp.set_value(false);
+    pros::delay(400);
+    
+    chassis.moveToPoint(67, 122, 1000, {.forwards = false});
+
+    chassis.waitUntilDone();
     clamp.set_value(false);
 
-    // // Hang
-    // chassis.turnToPoint(50, 115, 1000, {.minSpeed = 20});
-    // chassis.moveToPoint(50, 115, 1000);
-    // while (arm_rotation.get_position() / -100 < 600) {
-    //     arm.move(127);
-    // }
-    // arm.brake();
-
-    // chassis.turnToPoint(5, 70, 1000, {.forwards = false});
-    // chassis.moveToPoint(5, 70, 1500, {.forwards = false, .maxSpeed = 80});
-    // chassis.waitUntilDone();
-
-    // left_drive.move(40);
-    // right_drive.move(40);
-    // pros::delay(900);
-    // left_drive.brake();
-    // right_drive.brake();
-    //chassis.moveToPoint(30, 95, 9999);
+    // Leave
+    pros::delay(200);
+    chassis.moveToPoint(64, 90, 3000);
 
     /* --------------------------------- Ending --------------------------------- */
     chassis.waitUntilDone();
