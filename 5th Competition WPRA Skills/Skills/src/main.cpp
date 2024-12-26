@@ -366,7 +366,7 @@ void opcontrol() {
     int arm_angle = 0;
 
     int arm_down = 5;
-    int arm_middle = 135;
+    int arm_middle = 140;
     int arm_up = 610;
     int arm_flip = 920;
     int arm_overshoot = 15;
