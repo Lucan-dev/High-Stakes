@@ -159,8 +159,6 @@ void print_coords() {
 
 void autonomous() {
     // Setup
-    std::cout << "Program Running" << std::endl;
-    chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
 
     /* --------------------------------- Motion --------------------------------- */
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
@@ -329,33 +327,57 @@ void autonomous() {
     chassis.moveToPoint(24, 98, 1000);
     intake.move(127);
 
+    // 2nd ring
+    chassis.turnToPoint(46, 114, 1000);
+    chassis.moveToPoint(46, 114, 1000);
+
+    // 3rd ring
+    chassis.turnToPoint(51, 122.5, 1000);
+    chassis.moveToPoint(51, 122.5, 1000);
+
     // Place goal in corner
-    chassis.turnToPoint(61, 94, 1000);
-    chassis.moveToPoint(61, 94, 1000);
+    chassis.waitUntilDone();
+    pros::delay(300);
+    sweeper.set_value(true);
 
-    chassis.turnToPoint(67, 120, 1000, {.forwards = false});
-    intake.move(-127);
+    chassis.turnToPoint(62.5, 126.6, 1000, {.forwards = false, .direction = lemlib::AngularDirection::CW_CLOCKWISE, .maxSpeed = 80});
 
     chassis.waitUntilDone();
+    sweeper.set_value(false);
+    clamp.set_value(false);
     intake.brake();
-    clamp.set_value(false);
-    pros::delay(400);
-    
-    chassis.moveToPoint(67, 122, 1000, {.forwards = false});
 
-    chassis.waitUntilDone();
-    clamp.set_value(false);
+    pros::delay(200);
+    chassis.moveToPoint(62.5, 126.5, 1000, {.forwards = false});
 
     // Leave
-    pros::delay(200);
-    chassis.moveToPoint(64, 90, 3000);
+    chassis.moveToPoint(32.5, 96.5, 50000);
+
+    // // Place goal in corner
+    // chassis.turnToPoint(61, 94, 1000);
+    // chassis.moveToPoint(61, 94, 1000);
+
+    // chassis.turnToPoint(67, 120, 1000, {.forwards = false});
+    // intake.move(-127);
+
+    // chassis.waitUntilDone();
+    // intake.brake();
+    // clamp.set_value(false);
+    // pros::delay(400);
+    
+    // chassis.moveToPoint(67, 122, 1000, {.forwards = false});
+
+    // chassis.waitUntilDone();
+    // clamp.set_value(false);
+
+    // // Leave
+    // pros::delay(200);
+    // chassis.moveToPoint(64, 90, 3000);
 
     /* --------------------------------- Ending --------------------------------- */
     chassis.waitUntilDone();
     pros::delay(200);
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
-    std::cout << "Program Done" << std::endl;
-    print_coords();
 }
 
 void opcontrol() {
