@@ -158,7 +158,6 @@ void print_coords() {
 
 void autonomous() {
     // Setup
-    std::cout << "Program Running" << std::endl;
     arm_rotation.set_position(120 * -100);
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
 
@@ -183,8 +182,8 @@ void autonomous() {
 
     // 1st Ring
     pros::delay(200);
-    chassis.turnToPoint(30.5, -48.5, 1000);
-    chassis.moveToPoint(30.5, -48.5, 1000);
+    chassis.turnToPoint(29, -51, 1000);
+    chassis.moveToPoint(29, -51, 1000);
     intake.move(127);
 
     // 2nd Ring
@@ -194,13 +193,6 @@ void autonomous() {
     // Touch Bar
     chassis.turnToPoint(37, -29.5, 1000, {.maxSpeed = 60});
     chassis.moveToPoint(37, -29.5, 2000);
-
-    /* --------------------------------- Ending --------------------------------- */
-    // chassis.waitUntilDone();
-    // pros::delay(200);
-    // chassis.setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
-    // std::cout << "Program Done" << std::endl;
-    // print_coords();
 }
 
 void opcontrol() {
@@ -211,7 +203,7 @@ void opcontrol() {
     int arm_angle = 0;
 
     int arm_down = 5;
-    int arm_middle = 120;
+    int arm_middle = 132;
     int arm_up = 610;
     int arm_flip = 920;
     int arm_overshoot = 15;

@@ -158,8 +158,7 @@ void print_coords() {
 
 void autonomous() {
     // Setup
-    // std::cout << "Program Running" << std::endl;
-    // arm_rotation.set_position(120 * -100);
+    arm_rotation.set_position(120 * -100);
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
 
     /* --------------------------------- Motion --------------------------------- */
@@ -175,8 +174,8 @@ void autonomous() {
     arm.brake();
 
     // Goal
-    chassis.turnToPoint(27, -24, 1000, {.forwards = false});
-    chassis.moveToPoint(27, -24, 2000, {.forwards = false, .maxSpeed = 50});
+    chassis.turnToPoint(27, -27, 1000, {.forwards = false});
+    chassis.moveToPoint(27, -27, 2000, {.forwards = false, .maxSpeed = 60});
     chassis.waitUntilDone();
     clamp.set_value(true);
 
@@ -196,9 +195,9 @@ void autonomous() {
     sweeper.set_value(false);
 
     // Touch Bar
-    chassis.moveToPoint(19, -24, 2000, {.forwards = false, .maxSpeed = 60});
-    chassis.turnToPoint(38, -19, 1000);
-    chassis.moveToPoint(38, -19, 2000);
+    chassis.moveToPoint(19, -25, 2000, {.forwards = false, .maxSpeed = 80});
+    chassis.turnToPoint(37, -25, 1000);
+    chassis.moveToPoint(37, -25, 2000);
     intake.brake();
 
     /* --------------------------------- Ending --------------------------------- */
@@ -217,12 +216,12 @@ void opcontrol() {
     int arm_angle = 0;
 
     int arm_down = 5;
-    int arm_middle = 125;
+    int arm_middle = 132;
     int arm_up = 610;
     int arm_flip = 920;
     int arm_overshoot = 15;
 
-	bool clamp_down = false;
+	bool clamp_down = true;
     bool automatic_intake = false;
     bool sweeper_down = false;
 
