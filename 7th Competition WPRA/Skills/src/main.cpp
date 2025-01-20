@@ -340,7 +340,7 @@ void autonomous() {
     pros::delay(300);
     sweeper.set_value(true);
 
-    chassis.turnToPoint(61, 130, 1000, {.forwards = false, .direction = lemlib::AngularDirection::CW_CLOCKWISE, .maxSpeed = 80});
+    chassis.turnToPoint(62, 132, 1000, {.forwards = false, .direction = lemlib::AngularDirection::CW_CLOCKWISE, .maxSpeed = 80});
 
     chassis.waitUntilDone();
     sweeper.set_value(false);
@@ -348,7 +348,7 @@ void autonomous() {
     intake.brake();
 
     pros::delay(200);
-    chassis.moveToPoint(61, 130, 1000, {.forwards = false});
+    chassis.moveToPoint(62, 132, 1000, {.forwards = false});
 
     // Leave
     chassis.moveToPoint(32.5, 96.5, 50000);

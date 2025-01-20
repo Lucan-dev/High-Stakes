@@ -1,4 +1,5 @@
 #include "lemlib/api.hpp"
+#include "lemlib/chassis/chassis.hpp"
 #include "pros/abstract_motor.hpp"
 #include "pros/adi.hpp"
 #include "pros/distance.hpp"
@@ -158,6 +159,7 @@ void print_coords() {
 
 void autonomous() {
     // Setup
+    pros::delay(2000);
     arm_rotation.set_position(120 * -100);
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
 
@@ -185,20 +187,31 @@ void autonomous() {
     chassis.moveToPoint(16.5, -42.5, 1000);
     intake.move(127);
 
-    // 2nd Ring
-    chassis.turnToPoint(19.5, 0, 1000, {.maxSpeed = 80});
-    chassis.moveToPoint(19.5, 0, 2000, {.maxSpeed = 80});
-    intake.move(127);
+    // Corner seep
+    chassis.turnToPoint(-25, -35.5, 1000);
+    chassis.moveToPose(-25, -35.5,-124, 3000, {.minSpeed = 40});
+    intake.brake();
     sweeper.set_value(true);
-
+    chassis.moveToPose(-25, -35.5,-124, 500, {.minSpeed = 127});
+    chassis.turnToHeading(-180, 1000, {.minSpeed = 100});
     chassis.waitUntilDone();
     sweeper.set_value(false);
 
-    // Touch Bar
-    chassis.moveToPoint(19, -25, 2000, {.forwards = false, .maxSpeed = 80});
-    chassis.turnToPoint(37, -25, 1000);
-    chassis.moveToPoint(37, -25, 2000);
-    intake.brake();
+
+    // // 2nd Ring
+    // chassis.turnToPoint(19.5, 0, 1000, {.maxSpeed = 80});
+    // chassis.moveToPoint(19.5, 0, 2000, {.maxSpeed = 80});
+    // intake.move(127);
+    // sweeper.set_value(true);
+
+    // chassis.waitUntilDone();
+    // sweeper.set_value(false);
+
+    // // Touch Bar
+    // chassis.moveToPoint(19, -25, 2000, {.forwards = false, .maxSpeed = 80});
+    // chassis.turnToPoint(37, -25, 1000);
+    // chassis.moveToPoint(37, -25, 2000);
+    // intake.brake();
 
     /* --------------------------------- Ending --------------------------------- */
     // chassis.waitUntilDone();

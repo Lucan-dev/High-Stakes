@@ -158,6 +158,7 @@ void print_coords() {
 
 void autonomous() {
     // Setup
+    pros::delay(2000);
     arm_rotation.set_position(120 * -100);
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
 
@@ -185,20 +186,20 @@ void autonomous() {
     chassis.moveToPoint(-16.5, -42.5, 1000);
     intake.move(127);
 
-    // 2nd Ring
-    chassis.turnToPoint(-17.5, -1, 1000, {.maxSpeed = 80});
-    chassis.moveToPoint(-17.5, -1, 2000, {.maxSpeed = 80});
-    intake.move(127);
-    sweeper.set_value(true);
+    // // 2nd Ring
+    // chassis.turnToPoint(-17.5, -1, 1000, {.maxSpeed = 80});
+    // chassis.moveToPoint(-17.5, -1, 2000, {.maxSpeed = 80});
+    // intake.move(127);
+    // sweeper.set_value(true);
 
-    chassis.waitUntilDone();
-    sweeper.set_value(false);
+    // chassis.waitUntilDone();
+    // sweeper.set_value(false);
 
-    // Touch Bar
-    chassis.moveToPoint(-19, -25, 2000, {.forwards = false, .maxSpeed = 60});
-    chassis.turnToPoint(-37, -25, 1000);
-    chassis.moveToPoint(-37, -25, 2000);
-    intake.brake();
+    // // Touch Bar
+    // chassis.moveToPoint(-19, -25, 2000, {.forwards = false, .maxSpeed = 60});
+    // chassis.turnToPoint(-37, -25, 1000);
+    // chassis.moveToPoint(-37, -25, 2000);
+    // intake.brake();
 
     /* --------------------------------- Ending --------------------------------- */
     // chassis.waitUntilDone();
