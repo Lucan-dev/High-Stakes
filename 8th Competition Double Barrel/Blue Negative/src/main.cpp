@@ -107,7 +107,7 @@ void initialize() {
     pros::Task screen_task([&]() {
         int angle;
         while (true) {
-            angle = arm_rotation.get_position() / -100;
+            angle = arm_rotation.get_position() / 100;
             pros::lcd::print(0, "X: %f", chassis.getPose().x);
             pros::lcd::print(1, "Y: %f", chassis.getPose().y);
             pros::lcd::print(2, "Theta: %f", chassis.getPose().theta);
@@ -158,17 +158,17 @@ void print_coords() {
 
 void autonomous() {
     // Setup
-    arm_rotation.set_position(120 * -100);
+    arm_rotation.set_position(29 * 100);
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
 
     /* --------------------------------- Motion --------------------------------- */
     // Wallstake
-    while (arm_rotation.get_position() / -100 <= 790) {
+    while (arm_rotation.get_position() / -100 <= 190) {
         arm.move(127);
     }
     arm.brake();
 
-    while (arm_rotation.get_position() / -100 >= 30) {
+    while (arm_rotation.get_position() / -100 >= 2) {
         arm.move(-127);
     }
     arm.brake();
@@ -202,11 +202,11 @@ void opcontrol() {
     int arm_speed = 0;
     int arm_angle = 0;
 
-    int arm_down = 5;
-    int arm_middle = 132;
-    int arm_up = 610;
-    int arm_flip = 920;
-    int arm_overshoot = 15;
+    int arm_down = 2;
+    int arm_middle = 25;
+    int arm_up = 140;
+    int arm_flip = 225;
+    int arm_overshoot = 6;
 
 	bool clamp_down = true;
     bool automatic_intake = false;

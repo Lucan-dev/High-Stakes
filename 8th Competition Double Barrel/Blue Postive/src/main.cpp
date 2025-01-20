@@ -159,17 +159,17 @@ void print_coords() {
 void autonomous() {
     // Setup
     pros::delay(2000);
-    arm_rotation.set_position(120 * -100);
+    arm_rotation.set_position(29 * 100);
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
 
     /* --------------------------------- Motion --------------------------------- */
     // Wallstake
-    while (arm_rotation.get_position() / -100 <= 790) {
+    while (arm_rotation.get_position() / 100 <= 190) {
         arm.move(127);
     }
     arm.brake();
 
-    while (arm_rotation.get_position() / -100 >= 30) {
+    while (arm_rotation.get_position() / 100 >= 2) {
         arm.move(-127);
     }
     arm.brake();
@@ -186,20 +186,20 @@ void autonomous() {
     chassis.moveToPoint(-16.5, -42.5, 1000);
     intake.move(127);
 
-    // // 2nd Ring
-    // chassis.turnToPoint(-17.5, -1, 1000, {.maxSpeed = 80});
-    // chassis.moveToPoint(-17.5, -1, 2000, {.maxSpeed = 80});
-    // intake.move(127);
-    // sweeper.set_value(true);
+    // 2nd Ring
+    chassis.turnToPoint(-17.5, -1, 1000, {.maxSpeed = 80});
+    chassis.moveToPoint(-17.5, -1, 2000, {.maxSpeed = 80});
+    intake.move(127);
+    sweeper.set_value(true);
 
-    // chassis.waitUntilDone();
-    // sweeper.set_value(false);
+    chassis.waitUntilDone();
+    sweeper.set_value(false);
 
-    // // Touch Bar
-    // chassis.moveToPoint(-19, -25, 2000, {.forwards = false, .maxSpeed = 60});
-    // chassis.turnToPoint(-37, -25, 1000);
-    // chassis.moveToPoint(-37, -25, 2000);
-    // intake.brake();
+    // Touch Bar
+    chassis.moveToPoint(-19, -25, 2000, {.forwards = false, .maxSpeed = 60});
+    chassis.turnToPoint(-37, -25, 1000);
+    chassis.moveToPoint(-37, -25, 2000);
+    intake.brake();
 
     /* --------------------------------- Ending --------------------------------- */
     // chassis.waitUntilDone();
@@ -216,11 +216,11 @@ void opcontrol() {
     int arm_speed = 0;
     int arm_angle = 0;
 
-    int arm_down = 5;
-    int arm_middle = 132;
-    int arm_up = 610;
-    int arm_flip = 920;
-    int arm_overshoot = 15;
+    int arm_down = 2;
+    int arm_middle = 25;
+    int arm_up = 140;
+    int arm_flip = 225;
+    int arm_overshoot = 6;
 
 	bool clamp_down = true;
     bool automatic_intake = false;
@@ -229,8 +229,6 @@ void opcontrol() {
     // loop forever
     while (true) {
         arm_angle = arm_rotation.get_position() / 100;
-        // Make it so when arm goes up the angle also goes up
-        arm_angle = arm_angle * -1;
 
         /* --------------------------- Drivetrain Control --------------------------- */
         // Get joystick positions

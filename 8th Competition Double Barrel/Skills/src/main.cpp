@@ -123,20 +123,6 @@ void disabled() {}
 
 void competition_initialize() {}
 
-/* ------------------------------ My Functions ------------------------------ */
-bool arm_up() {
-    return (arm.get_position() > 2300 && arm.get_position() < 2500);
-}
-
-bool arm_down() {
-    if (arm_rotation.get_angle() <= 50) {
-        return false;
-
-    } else {
-        return true;
-    }
-}
-
 void print_coords() {
     double rounded_x;
     double rounded_y;
@@ -157,11 +143,17 @@ void print_coords() {
     }
 }
 
+int arm_down = 2;
+int arm_middle = 25;
+int arm_up = 140;
+int arm_flip = 225;
+int arm_overshoot = 6;
+
 void autonomous() {
     // Setup
+    chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
 
     /* --------------------------------- Motion --------------------------------- */
-    chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
     
     // Score red wall stake
     intake.move(127);
@@ -187,7 +179,7 @@ void autonomous() {
     chassis.moveToPoint(59.5, 65.5, 2000, {.maxSpeed = 100});
     intake.move(80);
 
-    while (arm_rotation.get_position() / -100 < 115) {
+    while (arm_rotation.get_position() / 100 < arm_down - arm_overshoot) {
         arm.move(30);
     }
     arm.brake();
@@ -200,18 +192,19 @@ void autonomous() {
     intake.brake();
     pros::delay(100);
 
-    while (arm_rotation.get_position() / -100 < 600) {
+    while (arm_rotation.get_position() / 100 < 600) {
         arm.move(127);
-    }
-    arm.brake();
-
-    while (arm_rotation.get_position() / -100 > 20) {
-        arm.move(-127);
     }
     arm.brake();
 
     // Get 2nd Ring
     chassis.moveToPoint(57, 64.5, 1000, {.forwards = false});
+
+    chassis.waitUntilDone();
+    while (arm_rotation.get_position() / 100 > 2) {
+        arm.move(-127);
+    }
+    arm.brake();
 
     chassis.turnToPoint(52, 85, 1000);
     intake.move(127);
