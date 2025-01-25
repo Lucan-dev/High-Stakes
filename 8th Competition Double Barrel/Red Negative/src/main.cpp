@@ -163,12 +163,12 @@ void autonomous() {
 
     /* --------------------------------- Motion --------------------------------- */
     // Wallstake
-    while (arm_rotation.get_position() / -100 <= 190) {
+    while (arm_rotation.get_position() / 100 <= 190) {
         arm.move(127);
     }
     arm.brake();
 
-    while (arm_rotation.get_position() / -100 >= 2) {
+    while (arm_rotation.get_position() / 100 >= 2) {
         arm.move(-127);
     }
     arm.brake();

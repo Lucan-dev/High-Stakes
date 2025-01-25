@@ -159,16 +159,17 @@ void print_coords() {
 
 void autonomous() {
     // Setup
-    pros::delay(2000);
     arm_rotation.set_position(29 * 100);
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
 
     /* --------------------------------- Motion --------------------------------- */
     // Wallstake
-    while (arm_rotation.get_position() / 100 <= 190) {
+    while (arm_rotation.get_position() / 100 <= 210) {
         arm.move(127);
     }
     arm.brake();
+
+    pros::delay(200);
 
     while (arm_rotation.get_position() / 100 >= 2) {
         arm.move(-127);
@@ -201,13 +202,6 @@ void autonomous() {
     chassis.turnToPoint(37, -25, 1000);
     chassis.moveToPoint(37, -25, 2000);
     intake.brake();
-
-    /* --------------------------------- Ending --------------------------------- */
-    // chassis.waitUntilDone();
-    // pros::delay(200);
-    // chassis.setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
-    // std::cout << "Program Done" << std::endl;
-    // print_coords();
 }
 
 void opcontrol() {
