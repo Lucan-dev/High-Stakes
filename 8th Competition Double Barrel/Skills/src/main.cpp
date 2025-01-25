@@ -144,10 +144,31 @@ void print_coords() {
 }
 
 int arm_down = 2;
-int arm_middle = 25;
+int arm_middle = 22;
 int arm_up = 140;
 int arm_flip = 225;
 int arm_overshoot = 6;
+
+void arm_to_down() {
+    while (arm_rotation.get_position() / 100 >= arm_down + arm_overshoot) {
+        arm.move(-127);
+    }
+    arm.brake();
+}
+
+void arm_to_middle() {
+    while (arm_rotation.get_position() / 100 <= arm_middle - arm_overshoot) {
+        arm.move(30);
+    }
+    arm.brake();
+}
+
+void arm_to_up() {
+    while (arm_rotation.get_position() / 100 <= arm_up - arm_overshoot) {
+        arm.move(127);
+    }
+    arm.brake();
+}
 
 void autonomous() {
     // Setup
@@ -179,10 +200,7 @@ void autonomous() {
     chassis.moveToPoint(59.5, 65.5, 2000, {.maxSpeed = 100});
     intake.move(80);
 
-    while (arm_rotation.get_position() / 100 < arm_down - arm_overshoot) {
-        arm.move(30);
-    }
-    arm.brake();
+    arm_to_middle();
 
     // Score Wallstake
     chassis.turnToHeading(90, 1000, {.maxSpeed = 60});
@@ -192,22 +210,14 @@ void autonomous() {
     intake.brake();
     pros::delay(100);
 
-    while (arm_rotation.get_position() / 100 < 600) {
-        arm.move(127);
-    }
-    arm.brake();
+    arm_to_up();
 
     // Get 2nd Ring
     chassis.moveToPoint(57, 64.5, 1000, {.forwards = false});
 
-    chassis.waitUntilDone();
-    while (arm_rotation.get_position() / 100 > 2) {
-        arm.move(-127);
-    }
-    arm.brake();
-
     chassis.turnToPoint(52, 85, 1000);
     intake.move(127);
+    arm_to_down();
     chassis.moveToPoint(52, 85, 1000);
 
     // Get 3 more rings
@@ -248,10 +258,7 @@ void autonomous() {
     chassis.moveToPoint(-58, 73.5, 2000, {.maxSpeed = 100});
     intake.move(80);
 
-    while (arm_rotation.get_position() / -100 < 115) {
-        arm.move(30);
-    }
-    arm.brake();
+    arm_to_middle();
 
     // Score 2nd Wallstake
     chassis.turnToHeading(-90, 1000, {.maxSpeed = 60});
@@ -261,21 +268,15 @@ void autonomous() {
     intake.brake();
     pros::delay(100);
 
-    while (arm_rotation.get_position() / -100 < 600) {
-        arm.move(127);
-    }
-    arm.brake();
-
-    while (arm_rotation.get_position() / -100 > 20) {
-        arm.move(-127);
-    }
-    arm.brake();
+    arm_to_up();
 
     // Get 2nd Ring
     chassis.moveToPoint(-56.5, 70.5, 1000, {.forwards = false});
 
     chassis.turnToPoint(-49, 93, 1000);
     intake.move(127);
+    arm_to_down();
+
     chassis.moveToPoint(-49, 93, 1000);
 
     // 3 More Rings
@@ -307,7 +308,7 @@ void autonomous() {
     chassis.moveToPoint(-21, 128, 1000);
 
     chassis.swingToHeading(-80, lemlib::DriveSide::LEFT, 1200);
-    chassis.moveToPoint(-51, 140, 1200);
+    chassis.moveToPoint(-52, 140, 1200);
 
     // Get 4th goal
     chassis.moveToPoint(0, 124, 4000, {.forwards = false, .maxSpeed = 60});
@@ -325,8 +326,8 @@ void autonomous() {
     chassis.moveToPoint(46, 114, 1000);
 
     // 3rd ring
-    chassis.turnToPoint(49, 125, 1000);
-    chassis.moveToPoint(49, 125, 1000);
+    chassis.turnToPoint(49, 126, 1000);
+    chassis.moveToPoint(49, 126, 1000);
 
     // Place goal in corner
     chassis.waitUntilDone();
@@ -336,15 +337,21 @@ void autonomous() {
     chassis.turnToPoint(62, 132, 1000, {.forwards = false, .direction = lemlib::AngularDirection::CW_CLOCKWISE, .maxSpeed = 80});
 
     chassis.waitUntilDone();
-    sweeper.set_value(false);
-    clamp.set_value(false);
     intake.brake();
 
     pros::delay(200);
     chassis.moveToPoint(62, 132, 1000, {.forwards = false});
 
     // Leave
-    chassis.moveToPoint(32.5, 96.5, 50000);
+    chassis.moveToPoint(30, 100, 50000);
+    clamp.set_value(false);
+
+    // Hang
+    chassis.waitUntilDone();
+    chassis.turnToHeading(45, 1000);
+    arm_to_up();
+    chassis.moveToPoint(5, 70, 1000, {.forwards = false, .maxSpeed = 100});
+    chassis.setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
 
     /* --------------------------------- Ending --------------------------------- */
     chassis.waitUntilDone();

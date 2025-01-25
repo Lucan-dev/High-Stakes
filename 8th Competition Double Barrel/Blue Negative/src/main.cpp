@@ -163,19 +163,19 @@ void autonomous() {
 
     /* --------------------------------- Motion --------------------------------- */
     // Wallstake
-    while (arm_rotation.get_position() / -100 <= 190) {
+    while (arm_rotation.get_position() / 100 <= 190) {
         arm.move(127);
     }
     arm.brake();
 
-    while (arm_rotation.get_position() / -100 >= 2) {
+    while (arm_rotation.get_position() / 100 >= 2) {
         arm.move(-127);
     }
     arm.brake();
 
     // Goal
-    chassis.turnToPoint(24.5, -25, 1000, {.forwards = false});
-    chassis.moveToPoint(24.5, -25, 2000, {.forwards = false, .maxSpeed = 50});
+    chassis.turnToPoint(25, -25, 1000, {.forwards = false});
+    chassis.moveToPoint(25, -25, 2000, {.forwards = false, .maxSpeed = 50});
 
     chassis.waitUntilDone();
     clamp.set_value(true);
@@ -216,7 +216,6 @@ void opcontrol() {
     while (true) {
         arm_angle = arm_rotation.get_position() / 100;
         // Make it so when arm goes up the angle also goes up
-        arm_angle = arm_angle * -1;
 
         /* --------------------------- Drivetrain Control --------------------------- */
         // Get joystick positions
