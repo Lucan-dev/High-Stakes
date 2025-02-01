@@ -224,7 +224,6 @@ void opcontrol() {
     while (true) {
         arm_angle = arm_rotation.get_position() / 100;
         // Make it so when arm goes up the angle also goes up
-        arm_angle = arm_angle * -1;
 
         /* --------------------------- Drivetrain Control --------------------------- */
         // Get joystick positions

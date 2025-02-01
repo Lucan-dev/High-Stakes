@@ -366,11 +366,11 @@ void opcontrol() {
     int arm_speed = 0;
     int arm_angle = 0;
 
-    int arm_down = 5;
-    int arm_middle = 132;
-    int arm_up = 610;
-    int arm_flip = 920;
-    int arm_overshoot = 15;
+    int arm_down = 2;
+    int arm_middle = 25;
+    int arm_up = 140;
+    int arm_flip = 225;
+    int arm_overshoot = 6;
 
 	bool clamp_down = false;
     bool automatic_intake = false;
@@ -396,7 +396,6 @@ void opcontrol() {
     while (true) {
         arm_angle = arm_rotation.get_position() / 100;
         // Make it so when arm goes up the angle also goes up
-        arm_angle = arm_angle * -1;
 
         /* --------------------------- Drivetrain Control --------------------------- */
         // Get joystick positions
