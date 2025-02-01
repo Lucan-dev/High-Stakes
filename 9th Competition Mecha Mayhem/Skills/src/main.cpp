@@ -175,7 +175,6 @@ void autonomous() {
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
 
     /* --------------------------------- Motion --------------------------------- */
-    
     // Score red wall stake
     intake.move(127);
     pros::delay(600);
@@ -196,8 +195,8 @@ void autonomous() {
     intake.move(127);
 
     // Wallstake Ring
-    chassis.turnToPoint(59.5, 65.5, 1000);
-    chassis.moveToPoint(59.5, 65.5, 2000, {.maxSpeed = 100});
+    chassis.turnToPoint(59, 65.5, 1000);
+    chassis.moveToPoint(59, 65.5, 2000, {.maxSpeed = 100});
     intake.move(80);
 
     arm_to_middle();
@@ -213,7 +212,7 @@ void autonomous() {
     arm_to_up();
 
     // Get 2nd Ring
-    chassis.moveToPoint(57, 64.5, 1000, {.forwards = false});
+    chassis.moveToPoint(56, 64.5, 1000, {.forwards = false});
 
     chassis.turnToPoint(52, 85, 1000);
     intake.move(127);
@@ -334,28 +333,32 @@ void autonomous() {
     pros::delay(300);
     sweeper.set_value(true);
 
-    chassis.turnToPoint(62, 132, 1000, {.forwards = false, .direction = lemlib::AngularDirection::CW_CLOCKWISE, .maxSpeed = 80});
+    chassis.turnToPoint(64, 132, 1000, {.forwards = false, .direction = lemlib::AngularDirection::CW_CLOCKWISE, .maxSpeed = 80});
 
     chassis.waitUntilDone();
     intake.brake();
+    sweeper.set_value(false);
 
     pros::delay(200);
-    chassis.moveToPoint(62, 132, 1000, {.forwards = false});
+    chassis.moveToPoint(64, 132, 1000, {.forwards = false});
 
     // Leave
-    chassis.moveToPoint(30, 100, 50000);
+    chassis.waitUntilDone();
     clamp.set_value(false);
+    chassis.moveToPoint(28, 102, 1000);
 
     // Hang
     chassis.waitUntilDone();
     chassis.turnToHeading(45, 1000);
-    arm_to_up();
-    chassis.moveToPoint(5, 70, 1000, {.forwards = false, .maxSpeed = 100});
-    chassis.setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
+
+    while (arm_rotation.get_position() / 100 <= 185) {
+        arm.move(127);
+    }
+    arm.brake();
+
+    chassis.moveToPoint(3, 72, 1000, {.forwards = false, .maxSpeed = 100});
 
     /* --------------------------------- Ending --------------------------------- */
-    chassis.waitUntilDone();
-    pros::delay(200);
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
 }
 
