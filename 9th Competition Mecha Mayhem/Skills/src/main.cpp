@@ -248,8 +248,8 @@ void autonomous() {
 
     // 1st Ring
     pros::delay(200);
-    chassis.turnToPoint(-28, 47, 1000);
-    chassis.moveToPoint(-28, 47, 1000);
+    chassis.turnToPoint(-28, 48, 1000);
+    chassis.moveToPoint(-28, 48, 1000);
     intake.move(127);
 
     // 2nd Wallstake Ring
@@ -270,7 +270,7 @@ void autonomous() {
     arm_to_up();
 
     // Get 2nd Ring
-    chassis.moveToPoint(-56.5, 70.5, 1000, {.forwards = false});
+    chassis.moveToPoint(-56, 70.5, 1000, {.forwards = false});
 
     chassis.turnToPoint(-49, 93, 1000);
     intake.move(127);
@@ -279,7 +279,7 @@ void autonomous() {
     chassis.moveToPoint(-49, 93, 1000);
 
     // 3 More Rings
-    chassis.turnToPoint(-49, 13, 1000);
+    chassis.turnToPoint(-49, 13, 1000, {.maxSpeed = 80});
     chassis.moveToPoint(-49, 13, 2500, {.maxSpeed = 80});
 
     // Last Ring
@@ -325,26 +325,27 @@ void autonomous() {
     chassis.moveToPoint(46, 114, 1000);
 
     // 3rd ring
-    chassis.turnToPoint(49, 126, 1000);
-    chassis.moveToPoint(49, 126, 1000);
+    chassis.turnToPoint(49, 125, 1000);
+    chassis.moveToPoint(49, 125, 1000);
 
     // Place goal in corner
     chassis.waitUntilDone();
     pros::delay(300);
     sweeper.set_value(true);
 
-    chassis.turnToPoint(64, 132, 1000, {.forwards = false, .direction = lemlib::AngularDirection::CW_CLOCKWISE, .maxSpeed = 80});
+    chassis.turnToPoint(65, 132, 1000, {.forwards = false, .direction = lemlib::AngularDirection::CW_CLOCKWISE, .maxSpeed = 80});
 
     chassis.waitUntilDone();
     intake.brake();
     sweeper.set_value(false);
 
     pros::delay(200);
-    chassis.moveToPoint(64, 132, 1000, {.forwards = false});
+    chassis.moveToPoint(65, 132, 1000, {.forwards = false});
 
     // Leave
     chassis.waitUntilDone();
     clamp.set_value(false);
+    pros::delay(50);
     chassis.moveToPoint(28, 102, 1000);
 
     // Hang
