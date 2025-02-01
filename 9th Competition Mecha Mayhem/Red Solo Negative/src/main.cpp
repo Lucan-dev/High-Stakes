@@ -175,13 +175,13 @@ void autonomous() {
 
     // 1st Goal
     chassis.turnToPoint(-24.5, -25, 1000, {.forwards = false});
-    chassis.moveToPoint(-24.5, -25, 2000, {.forwards = false, .maxSpeed = 50});
+    chassis.moveToPoint(-24.5, -25, 2000, {.forwards = false, .maxSpeed = 60});
 
     chassis.waitUntilDone();
     clamp.set_value(true);
 
     // 1st Ring
-    pros::delay(200);
+    pros::delay(100);
     chassis.turnToPoint(-30.5, -48.5, 1000);
     chassis.moveToPoint(-30.5, -48.5, 1000);
     intake.move(127);
@@ -191,14 +191,29 @@ void autonomous() {
     chassis.moveToPoint(-17, -49, 1000);
 
     // Go to positive side
-    chassis.turnToPoint(-28.5, 16.5, 1000, {.maxSpeed = 80});
-    chassis.moveToPoint(-28.5, 16.5, 1000);
+    chassis.turnToPoint(-28.5, 16.5, 1000);
+    chassis.moveToPoint(-28.5, 16.5, 2000);
 
     chassis.waitUntil(40);
     intake.brake();
-    clamp.set_value(false);;
+    clamp.set_value(false);
 
     // 2nd Goal
+    chassis.turnToPoint(-52, 14.5, 1000, {.forwards = false});
+    chassis.moveToPoint(-52, 14.5, 1000, {.forwards = false, .maxSpeed = 60});
+
+    chassis.waitUntilDone();
+    clamp.set_value(true);
+    pros::delay(100);
+
+    // 3rd Ring
+    chassis.turnToPoint(-62.5, 34.5, 1000);
+    chassis.moveToPoint(-62.5, 34.5, 1000);
+    intake.move(127);
+
+    // Touch bar
+    chassis.turnToPoint(-58, 6, 1000);
+    chassis.moveToPoint(-58, 6, 2000);
 
     /* --------------------------------- Ending --------------------------------- */
     chassis.waitUntilDone();
