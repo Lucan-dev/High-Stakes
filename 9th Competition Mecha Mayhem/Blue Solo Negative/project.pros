@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "Red Solo Negative",
+    "project_name": "Blue Solo Negative",
     "target": "v5",
     "templates": {
       "LemLib": {
@@ -299,7 +299,7 @@
     },
     "upload_options": {
       "icon": "pros",
-      "slot": 3
+      "slot": 6
     },
     "use_early_access": true
   }

@@ -40,7 +40,7 @@ lemlib::Drivetrain drivetrain(
     10,
     lemlib::Omniwheel::NEW_275,
     450,
-    2
+    0
 );
 
 lemlib::OdomSensors sensors(
@@ -174,46 +174,46 @@ void autonomous() {
     arm.brake();
 
     // 1st Goal
-    chassis.turnToPoint(-24.5, -25, 1000, {.forwards = false});
-    chassis.moveToPoint(-24.5, -25, 2000, {.forwards = false, .maxSpeed = 60});
+    chassis.turnToPoint(26.5, -28, 1000, {.forwards = false});
+    chassis.moveToPoint(26.5, -28, 2000, {.forwards = false, .maxSpeed = 60});
 
     chassis.waitUntilDone();
     clamp.set_value(true);
 
     // 1st Ring
     pros::delay(100);
-    chassis.turnToPoint(-30.5, -48.5, 1000);
-    chassis.moveToPoint(-30.5, -48.5, 1000);
+    chassis.turnToPoint(30, -49.5, 1000);
+    chassis.moveToPoint(30, -49.5, 1000);
     intake.move(127);
 
     // 2nd Ring
-    chassis.turnToPoint(-17, -49, 1000);
-    chassis.moveToPoint(-17, -49, 1000);
+    chassis.turnToPoint(17, -51, 1000);
+    chassis.moveToPoint(17, -51, 1000);
 
     // Go to positive side
-    chassis.turnToPoint(-28.5, 16.5, 1000);
-    chassis.moveToPoint(-28.5, 16.5, 2000);
+    chassis.turnToPoint(28.5, 16.5, 1000);
+    chassis.moveToPoint(28.5, 16.5, 2000);
 
     chassis.waitUntil(40);
     intake.brake();
     clamp.set_value(false);
 
     // 2nd Goal
-    chassis.turnToPoint(-52, 14.5, 1000, {.forwards = false});
-    chassis.moveToPoint(-52, 14.5, 1000, {.forwards = false, .maxSpeed = 60});
+    chassis.turnToPoint(49, 14, 1000, {.forwards = false});
+    chassis.moveToPoint(49, 14, 1000, {.forwards = false, .maxSpeed = 60});
 
     chassis.waitUntilDone();
     clamp.set_value(true);
     pros::delay(100);
 
     // 3rd Ring
-    chassis.turnToPoint(-62.5, 34.5, 1000);
-    chassis.moveToPoint(-62.5, 34.5, 1000);
+    chassis.turnToPoint(60, 28, 1000);
+    chassis.moveToPoint(60, 28, 1000);
     intake.move(127);
 
     // Touch bar
-    chassis.turnToPoint(-58, 6, 1000);
-    chassis.moveToPoint(-58, 6, 2000);
+    chassis.turnToPoint(60, 4, 1000);
+    chassis.moveToPoint(60, 4, 2000);
 
     /* --------------------------------- Ending --------------------------------- */
     chassis.waitUntilDone();
