@@ -157,7 +157,7 @@ void print_coords() {
 }
 
 void autonomous() {
-    // Setup
+     // Setup
     arm_rotation.set_position(29 * 100);
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
 
@@ -173,22 +173,56 @@ void autonomous() {
     }
     arm.brake();
 
-    // Goal
-    chassis.turnToPoint(25, -25, 1000, {.forwards = false});
-    chassis.moveToPoint(25, -25, 2000, {.forwards = false, .maxSpeed = 50});
+    // 1st Goal
+    chassis.turnToPoint(26.5, -28, 1000, {.forwards = false});
+    chassis.moveToPoint(26.5, -28, 2000, {.forwards = false, .maxSpeed = 50});
 
     chassis.waitUntilDone();
     clamp.set_value(true);
 
     // 1st Ring
     pros::delay(200);
-    chassis.turnToPoint(29, -51, 1000);
-    chassis.moveToPoint(29, -51, 1000);
+    chassis.turnToPoint(30, -49.5, 1000);
+    chassis.moveToPoint(30, -49.5, 1000);
     intake.move(127);
 
     // 2nd Ring
-    chassis.turnToPoint(17, -49, 1000);
-    chassis.moveToPoint(17, -49, 1000);
+    chassis.turnToPoint(17, -51, 1000);
+    chassis.moveToPoint(17, -51, 1000);
+
+    
+    // // Setup
+    // arm_rotation.set_position(29 * 100);
+    // chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
+
+    // /* --------------------------------- Motion --------------------------------- */
+    // // Wallstake
+    // while (arm_rotation.get_position() / 100 <= 190) {
+    //     arm.move(127);
+    // }
+    // arm.brake();
+
+    // while (arm_rotation.get_position() / 100 >= 2) {
+    //     arm.move(-127);
+    // }
+    // arm.brake();
+
+    // // Goal
+    // chassis.turnToPoint(25, -25, 1000, {.forwards = false});
+    // chassis.moveToPoint(25, -25, 2000, {.forwards = false, .maxSpeed = 50});
+
+    // chassis.waitUntilDone();
+    // clamp.set_value(true);
+
+    // // 1st Ring
+    // pros::delay(200);
+    // chassis.turnToPoint(29, -51, 1000);
+    // chassis.moveToPoint(29, -51, 1000);
+    // intake.move(127);
+
+    // // 2nd Ring
+    // chassis.turnToPoint(17, -49, 1000);
+    // chassis.moveToPoint(17, -49, 1000);
 
     // Touch Bar
     chassis.turnToPoint(37, -29.5, 1000, {.maxSpeed = 60});

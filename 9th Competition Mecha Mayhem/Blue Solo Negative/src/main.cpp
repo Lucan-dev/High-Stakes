@@ -214,11 +214,6 @@ void autonomous() {
     // Touch bar
     chassis.turnToPoint(60, 4, 1000);
     chassis.moveToPoint(60, 4, 2000);
-
-    /* --------------------------------- Ending --------------------------------- */
-    chassis.waitUntilDone();
-    pros::delay(200);
-    chassis.setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
 }
 
 void opcontrol() {

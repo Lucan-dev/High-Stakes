@@ -173,7 +173,7 @@ void autonomous() {
     }
     arm.brake();
 
-    // Goal
+    // 1st Goal
     chassis.turnToPoint(-24.5, -25, 1000, {.forwards = false});
     chassis.moveToPoint(-24.5, -25, 2000, {.forwards = false, .maxSpeed = 50});
 
@@ -193,14 +193,6 @@ void autonomous() {
     // Touch Bar
     chassis.turnToPoint(-37, -29.5, 1000, {.maxSpeed = 80});
     chassis.moveToPoint(-37, -29.5, 2000);
-    intake.move(127);
-
-    /* --------------------------------- Ending --------------------------------- */
-    // chassis.waitUntilDone();
-    // pros::delay(200);
-    // chassis.setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
-    // std::cout << "Program Done" << std::endl;
-    // print_coords();
 }
 
 void opcontrol() {
