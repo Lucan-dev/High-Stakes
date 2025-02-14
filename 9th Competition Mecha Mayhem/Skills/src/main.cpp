@@ -325,8 +325,8 @@ void autonomous() {
     chassis.moveToPoint(46, 114, 1000);
 
     // 3rd ring
-    chassis.turnToPoint(49, 125, 1000);
-    chassis.moveToPoint(49, 125, 1000);
+    chassis.turnToPoint(49, 126, 1000);
+    chassis.moveToPoint(49, 126, 1000);
 
     // Place goal in corner
     chassis.waitUntilDone();
@@ -379,6 +379,7 @@ void opcontrol() {
 	bool clamp_down = false;
     bool automatic_intake = false;
     bool sweeper_down = false;
+    bool backup = false;
 
     // Score red wall stake
     intake.move(127);
@@ -415,8 +416,10 @@ void opcontrol() {
         }
 
         // Move motors
-        left_drive.move(leftY + rightX);
-        right_drive.move(leftY - rightX);
+        if (!backup) {
+            left_drive.move(leftY + rightX);
+            right_drive.move(leftY - rightX);
+        } 
 
 		/* ----------------------------- Intake Control ---------------------------- */
         if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
@@ -489,7 +492,7 @@ void opcontrol() {
             }
 
         // Arm flip
-        } else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
+        } else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)) {
             if (arm_angle <= arm_flip) {
                 arm_speed = 130;
 
