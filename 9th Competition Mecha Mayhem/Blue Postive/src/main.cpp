@@ -162,6 +162,7 @@ void autonomous() {
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
 
     /* --------------------------------- Motion --------------------------------- */
+    pros::delay(2000);
     // Wallstake
     while (arm_rotation.get_position() / 100 <= 190) {
         arm.move(127);
@@ -194,22 +195,22 @@ void autonomous() {
     chassis.waitUntilDone();
     sweeper.set_value(false);
 
-    // Corner Sweep
-    chassis.turnToPoint(25, -35.5, 1000);
-    chassis.moveToPose(25, -35.5,-124, 3000, {.minSpeed = 40});
-    intake.brake();
-    sweeper.set_value(true);
-
-    chassis.moveToPose(25, -35.5,-124, 500, {.minSpeed = 127});
-    chassis.turnToHeading(-180, 1000, {.minSpeed = 100});
-    chassis.waitUntilDone();
-    sweeper.set_value(false);
-
-    // // Touch Bar
-    // chassis.moveToPoint(-19, -25, 2000, {.forwards = false, .maxSpeed = 60});
-    // chassis.turnToPoint(-37, -25, 1000);
-    // chassis.moveToPoint(-37, -25, 2000);
+    // // Corner Sweep
+    // chassis.turnToPoint(25, -35.5, 1000);
+    // chassis.moveToPose(25, -35.5,-124, 3000, {.minSpeed = 40});
     // intake.brake();
+    // sweeper.set_value(true);
+
+    // chassis.moveToPose(25, -35.5,-124, 500, {.minSpeed = 127});
+    // chassis.turnToHeading(-180, 1000, {.minSpeed = 100});
+    // chassis.waitUntilDone();
+    // sweeper.set_value(false);
+
+    // Touch Bar
+    chassis.moveToPoint(-19, -25, 2000, {.forwards = false, .maxSpeed = 60});
+    chassis.turnToPoint(-37, -25, 1000);
+    chassis.moveToPoint(-37, -25, 2000);
+    intake.brake();
 
     /* --------------------------------- Ending --------------------------------- */
     // chassis.waitUntilDone();
