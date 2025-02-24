@@ -180,41 +180,27 @@ void autonomous() {
     chassis.waitUntilDone();
     clamp.set_value(true);
 
-    // 2 Rings
+    // 1st Ring
     pros::delay(200);
-    chassis.turnToHeading(230, 1000);
-
-    chassis.moveToPose(-35, -49, -185, 1200, {.minSpeed=40, .earlyExitRange=8});
+    chassis.turnToPoint(-30.5, -48.5, 1000);
+    chassis.moveToPoint(-30.5, -48.5, 1000);
     intake.move(127);
 
-    chassis.moveToPose(-30.5, -62, -205, 1200, {.minSpeed=40});
-    chassis.moveToPoint(-30, -64, 800);
+    // 2nd Ring
+    chassis.turnToPoint(-17, -49, 1000);
+    chassis.moveToPoint(-17, -49, 1000);
 
     // 3rd Ring
-    chassis.moveToPoint(-37, -34, 1000, {.forwards = false});
+    chassis.turnToPoint(-16.5, 0, 1000);
+    chassis.moveToPoint(-16.5, 0, 1500);
 
-    chassis.turnToPoint(-20, -44, 1000);
-    chassis.moveToPoint(-20, -44, 1000);
-
-
-    // 4th Ring
-    chassis.turnToPoint(-14.5, -2, 1000);
-    chassis.moveToPoint(-14.5, -2, 1000);
-
-    chassis.waitUntil(20);
+    chassis.waitUntil(10);
     sweeper.set_value(true);
 
     chassis.waitUntilDone();
-    pros::delay(200);
     sweeper.set_value(false);
 
-    pros::delay(200);
-    chassis.moveToPoint(-14.5, -15, 1000, {.forwards = false});
-
-    // wait
-    chassis.waitUntilDone();
-    pros::delay(200);
-    chassis.setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
+    chassis.moveToPoint(-19, -25, 2000, {.forwards = false, .maxSpeed = 80});
 }
 
 void opcontrol() {
