@@ -124,8 +124,6 @@ void opcontrol() {
 	/* -------------------------------- Variables ------------------------------- */
 	int dead_zone = 8;
 	int intake_speed = 0;
-    double arm_angle = 0;
-    int arm_kP = 8;
 
 	bool clamp_down = true;
     bool automatic_intake = false;
@@ -134,8 +132,11 @@ void opcontrol() {
     int arm_mode = 0;
     int arm_target;
     int arm_speed;
-    int arm_difference;
-    int arm_range = 1;
+
+    float arm_angle = 0;
+    float arm_kP = 8;
+    float arm_difference;
+    float arm_range = 1;
 
     // loop forever
     while (true) {
@@ -170,30 +171,33 @@ void opcontrol() {
         intake.move(intake_speed);
 
         /* ------------------------------ Arm Movement ------------------------------ */
-        arm_angle = arm_rotation.get_position() / 100;
+        arm_angle = arm_rotation.get_position() / 100.0;
+        if (arm_angle > 300) {
+            arm_angle = 0;
+        }
         // Up
         if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {
             arm_mode = 1;
         // Down
         } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)) {
             arm_mode = 2;
-        // Rest
-        } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
+        // Bottom
+        } else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
             arm_mode = 3;
         // Middle
-        } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
+        } else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
             arm_mode = 4;        
         // Neutral Stake
-        } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_X)) {
+        } else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
             arm_mode = 5;
         // Alliance Stake
-        } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_Y)) {
+        } else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)) {
             arm_mode = 6;
         // Goal Flip
-        } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_B)) {
+        } else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {
             arm_mode = 7;
         // Stop
-        } else {
+        } else if (arm_mode < 3) {
             arm_mode = 0;
         }
 
