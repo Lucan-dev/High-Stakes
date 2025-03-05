@@ -199,6 +199,7 @@ void autonomous() {
 
     chassis.waitUntilDone();
     sweeper.set_value(false);
+    pros::delay(200);
 
     chassis.moveToPoint(19, -25, 2000, {.forwards = false, .maxSpeed = 80});
 }

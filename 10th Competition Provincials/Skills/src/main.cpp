@@ -423,10 +423,10 @@ void opcontrol() {
 
 		/* ----------------------------- Intake Control ---------------------------- */
         if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
-            intake_speed = -127;
+            intake_speed = -120;
 
         } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
-            intake_speed = 127;
+            intake_speed = 120;
 
         } else {
             intake_speed = 0;

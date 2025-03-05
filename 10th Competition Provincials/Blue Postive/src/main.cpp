@@ -161,6 +161,8 @@ void autonomous() {
     arm_rotation.set_position(29 * 100);
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
 
+    pros::delay(2000);
+
     /* --------------------------------- Motion --------------------------------- */
     // Wallstake
     while (arm_rotation.get_position() / 100 <= 190) {
