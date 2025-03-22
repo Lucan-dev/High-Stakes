@@ -12,11 +12,11 @@
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
 /* --------------------------------- Motors --------------------------------- */
-pros::MotorGroup left_drive({-20, -16, 15}, pros::MotorGearset::blue);
-pros::MotorGroup right_drive({-17, 18, 21}, pros::MotorGearset::blue);
+pros::MotorGroup left_drive({-3, -11, 12}, pros::MotorGearset::blue);
+pros::MotorGroup right_drive({4, 2, -1}, pros::MotorGearset::blue);
 
-pros::Motor intake(13, pros::MotorGearset::blue);
-pros::MotorGroup arm({-4, 5}, pros::MotorGearset::red);
+pros::Motor intake(-13, pros::MotorGearset::blue);
+pros::MotorGroup arm({-17, 5}, pros::MotorGearset::red);
 
 /* --------------------------------- Sensors -------------------------------- */
 pros::IMU inertial(14);
@@ -25,7 +25,7 @@ pros::Rotation vert(6);
 pros::Rotation hor(-19);
 
 /* --------------------------------- Pistons -------------------------------- */
-pros::adi::DigitalOut clamp('H');
+pros::adi::DigitalOut clamp('B');
 pros::adi::DigitalOut sweeper('G');
 
 /* ----------------------------- Tracking Wheels ---------------------------- */
@@ -134,9 +134,9 @@ void opcontrol() {
     int arm_speed;
 
     float arm_angle = 0;
-    float arm_kP = 8;
+    float arm_kP = 1.5;
     float arm_difference;
-    float arm_range = 1;
+    arm.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
 
     // loop forever
     while (true) {
@@ -185,16 +185,13 @@ void opcontrol() {
         } else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
             arm_mode = 3;
         // Middle
-        } else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
+        } else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)) {
             arm_mode = 4;        
         // Neutral Stake
-        } else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
-            arm_mode = 5;
-        // Alliance Stake
         } else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)) {
-            arm_mode = 6;
+            arm_mode = 5;
         // Goal Flip
-        } else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {
+        } else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)) {
             arm_mode = 7;
         // Stop
         } else if (arm_mode < 3) {
@@ -205,7 +202,6 @@ void opcontrol() {
         
         if (arm_mode == 0) {
             arm.brake();
-
         } else if (arm_mode == 1) {
             arm.move(127);
 
@@ -217,11 +213,10 @@ void opcontrol() {
             arm_difference = arm_target - arm_angle;
             arm_speed = arm_kP * arm_difference;
 
-            if (abs(arm_speed) < arm_range) {
-                arm.brake();
-            } else {
-                arm.move(arm_speed);
-            }
+            controller.clear();
+            controller.print(1, 1, "Arm Speed:");
+
+            arm.move(arm_speed);
         }
 
 		/* -------------------------------- Mogo Mech ------------------------------- */
