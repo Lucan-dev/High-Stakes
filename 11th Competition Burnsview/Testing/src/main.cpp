@@ -16,12 +16,12 @@ pros::MotorGroup left_drive({-3, -11, 12}, pros::MotorGearset::blue);
 pros::MotorGroup right_drive({4, 2, -1}, pros::MotorGearset::blue);
 
 pros::Motor intake(-13, pros::MotorGearset::blue);
-pros::MotorGroup arm({-17, 5}, pros::MotorGearset::red);
+pros::MotorGroup arm({-6, 7}, pros::MotorGearset::red);
 
 /* --------------------------------- Sensors -------------------------------- */
 pros::IMU inertial(14);
-pros::Rotation arm_rotation(2);
-pros::Rotation vert(6);
+pros::Rotation arm_rotation(5);
+pros::Rotation vert(8);
 pros::Rotation hor(-19);
 
 /* --------------------------------- Pistons -------------------------------- */
@@ -89,7 +89,7 @@ void initialize() {
     right_drive.set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
 
     intake.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-    arm.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+    arm.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
 
     /* ---------------------------------- Setup --------------------------------- */
     pros::lcd::initialize();
@@ -132,11 +132,11 @@ void opcontrol() {
     int arm_mode = 0;
     int arm_target;
     int arm_speed;
+    int min_arm_speed = 8;
 
     float arm_angle = 0;
-    float arm_kP = 1.5;
+    float arm_kP = 0.5;
     float arm_difference;
-    arm.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
 
     // loop forever
     while (true) {
@@ -159,10 +159,10 @@ void opcontrol() {
 
 		/* ----------------------------- Intake Control ---------------------------- */
         if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
-            intake_speed = -127;
+            intake_speed = -120;
 
         } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
-            intake_speed = 127;
+            intake_speed = 120;
 
         } else {
             intake_speed = 0;
@@ -172,9 +172,7 @@ void opcontrol() {
 
         /* ------------------------------ Arm Movement ------------------------------ */
         arm_angle = arm_rotation.get_position() / 100.0;
-        if (arm_angle > 300) {
-            arm_angle = 0;
-        }
+
         // Up
         if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {
             arm_mode = 1;
@@ -192,13 +190,13 @@ void opcontrol() {
             arm_mode = 5;
         // Goal Flip
         } else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)) {
-            arm_mode = 7;
+            arm_mode = 6;
         // Stop
         } else if (arm_mode < 3) {
             arm_mode = 0;
         }
 
-        int modes[5] = {2, 25, 140, 210, 225};
+        int modes[5] = {2, 56, 450, 695};
         
         if (arm_mode == 0) {
             arm.brake();
@@ -212,6 +210,12 @@ void opcontrol() {
             arm_target = modes[arm_mode - 3];
             arm_difference = arm_target - arm_angle;
             arm_speed = arm_kP * arm_difference;
+
+            if (arm_speed < min_arm_speed && arm_speed > 0) {
+                arm_speed = min_arm_speed;
+            } else if (arm_speed > -min_arm_speed && arm_speed < 0) {
+                arm_speed = -min_arm_speed;
+            }
 
             controller.clear();
             controller.print(1, 1, "Arm Speed:");
