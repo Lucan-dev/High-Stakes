@@ -26,7 +26,7 @@ pros::Rotation hor(-19);
 
 /* --------------------------------- Pistons -------------------------------- */
 pros::adi::DigitalOut clamp('B');
-pros::adi::DigitalOut sweeper('G');
+pros::adi::DigitalOut sweeper('A');
 
 /* ----------------------------- Tracking Wheels ---------------------------- */
 lemlib::TrackingWheel vert_wheel(&vert, lemlib::Omniwheel::NEW_2, -1);
@@ -83,6 +83,10 @@ lemlib::Chassis chassis(
     sensors
 );
 
+/* -------------------------------- Global Variables ------------------------------- */
+bool clamp_down = false;
+bool sweeper_down = false;
+
 void initialize() {
 	/* ----------------------------- Motor Stopping ----------------------------- */
 	left_drive.set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
@@ -124,10 +128,7 @@ void opcontrol() {
 	/* -------------------------------- Variables ------------------------------- */
 	int dead_zone = 8;
 	int intake_speed = 0;
-
-	bool clamp_down = true;
     bool automatic_intake = false;
-    bool sweeper_down = false;
 
     int arm_mode = 0;
     int arm_target;
