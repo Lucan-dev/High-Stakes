@@ -5,6 +5,8 @@
 #include "pros/misc.h"
 #include "pros/misc.hpp"
 #include "pros/motors.h"
+#include "pros/rtos.hpp"
+#include <cstddef>
 #include <cstdio>
 #include "main.h"
 
@@ -19,18 +21,16 @@ pros::Motor intake(-13, pros::MotorGearset::blue);
 pros::MotorGroup arm({-6, 7}, pros::MotorGearset::red);
 
 /* --------------------------------- Sensors -------------------------------- */
-pros::IMU inertial(14);
+pros::IMU inertial(20);
 pros::Rotation arm_rotation(5);
-pros::Rotation vert(8);
-pros::Rotation hor(-19);
+pros::Rotation vert(14);
 
 /* --------------------------------- Pistons -------------------------------- */
 pros::adi::DigitalOut clamp('B');
 pros::adi::DigitalOut sweeper('A');
 
 /* ----------------------------- Tracking Wheels ---------------------------- */
-lemlib::TrackingWheel vert_wheel(&vert, lemlib::Omniwheel::NEW_2, -1);
-lemlib::TrackingWheel hor_wheel(&hor, lemlib::Omniwheel::NEW_2, 1);
+lemlib::TrackingWheel vert_wheel(&vert, lemlib::Omniwheel::NEW_2, -0.5);
 
 /* ---------------------------- Drivetrain Setup ---------------------------- */
 lemlib::Drivetrain drivetrain(
@@ -45,7 +45,7 @@ lemlib::Drivetrain drivetrain(
 lemlib::OdomSensors sensors(
 	&vert_wheel,
     nullptr,
-    &hor_wheel,
+    nullptr,
     nullptr,
     &inertial
 );
@@ -87,6 +87,8 @@ lemlib::Chassis chassis(
 bool clamp_down = false;
 bool sweeper_down = false;
 
+float arm_kP = 0.5;
+
 void initialize() {
 	/* ----------------------------- Motor Stopping ----------------------------- */
 	left_drive.set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
@@ -122,7 +124,77 @@ void disabled() {}
 
 void competition_initialize() {}
 
-void autonomous() {}
+/* ------------------------------ Arm Functions ----------------------------- */
+int arm_range = 1;
+int arm_range_timeout = 100;
+
+int default_max_speed = 127;
+int default_min_speed = 8;
+
+void arm_to(int target, int timeout, int max_speed = default_max_speed, int min_speed = default_min_speed) {
+    int arm_speed;
+
+    float arm_angle;
+    float arm_kP = 0.5;
+    float arm_difference;
+
+    bool running = true;
+    bool in_range = false;
+    int current_time = 0;
+    int start_time = pros::c::millis();
+
+    while (running) {
+        // Set variables
+        arm_angle = arm_rotation.get_position() / 100.0;
+        arm_difference = target - arm_angle;
+        arm_speed = arm_kP * arm_difference;
+
+        // Check minimum speed
+        if (arm_speed < min_speed && arm_speed > 0) {
+            arm_speed = min_speed;
+        } else if (arm_speed > -min_speed && arm_speed < 0) {
+            arm_speed = -min_speed;
+        }
+
+        // Check maximum speed
+        if (arm_speed > 0 && arm_speed > max_speed) {
+            arm_speed = max_speed;
+        } else if (arm_speed < 0 && arm_speed < -max_speed) {
+            arm_speed = -max_speed;
+        }
+
+        // Check if done
+        if (abs(arm_difference) <= arm_range) {
+            if (current_time > 0) {
+                if (pros::c::millis() - current_time >= arm_range_timeout) {
+                    running = false;
+                }
+
+            } else {
+                current_time = pros::c::millis();
+            }
+
+        } else {
+            current_time = 0;
+        }
+
+        // Check if timed out
+        if (pros::c::millis() - start_time >= timeout) {
+            running = false;
+        }
+
+        arm.move(arm_speed);
+
+        pros::delay(20);
+    }
+    arm.brake();
+}
+
+void autonomous() {
+    arm_to(56, 1000);
+    arm_to(450, 2000, 50);
+    arm_to(2, 1000);
+}
 
 void opcontrol() {
 	/* -------------------------------- Variables ------------------------------- */
@@ -136,7 +208,6 @@ void opcontrol() {
     int min_arm_speed = 8;
 
     float arm_angle = 0;
-    float arm_kP = 0.5;
     float arm_difference;
 
     // loop forever
@@ -217,9 +288,6 @@ void opcontrol() {
             } else if (arm_speed > -min_arm_speed && arm_speed < 0) {
                 arm_speed = -min_arm_speed;
             }
-
-            controller.clear();
-            controller.print(1, 1, "Arm Speed:");
 
             arm.move(arm_speed);
         }
