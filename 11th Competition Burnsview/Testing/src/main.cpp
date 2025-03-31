@@ -87,8 +87,6 @@ lemlib::Chassis chassis(
 bool clamp_down = false;
 bool sweeper_down = false;
 
-float arm_kP = 0.5;
-
 void initialize() {
 	/* ----------------------------- Motor Stopping ----------------------------- */
 	left_drive.set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
@@ -125,17 +123,12 @@ void disabled() {}
 void competition_initialize() {}
 
 /* ------------------------------ Arm Functions ----------------------------- */
-int arm_range = 1;
-int arm_range_timeout = 100;
-
-int default_max_speed = 127;
-int default_min_speed = 8;
-
-void arm_to(int target, int timeout, int max_speed = default_max_speed, int min_speed = default_min_speed) {
+void arm_to(int target, int timeout, float arm_kP = 0.5, int max_speed = 127, int min_speed = 8) {
     int arm_speed;
+    int arm_range = 1;
+    int arm_range_timeout = 100;
 
     float arm_angle;
-    float arm_kP = 0.5;
     float arm_difference;
 
     bool running = true;
@@ -192,7 +185,7 @@ void arm_to(int target, int timeout, int max_speed = default_max_speed, int min_
 
 void autonomous() {
     arm_to(56, 1000);
-    arm_to(450, 2000, 50);
+    arm_to(450, 2000);
     arm_to(2, 1000);
 }
 
@@ -205,9 +198,10 @@ void opcontrol() {
     int arm_mode = 0;
     int arm_target;
     int arm_speed;
-    int min_arm_speed = 8;
+    int min_arm_speed = 7;
 
     float arm_angle = 0;
+    float arm_kP = 0.55;
     float arm_difference;
 
     // loop forever
@@ -268,7 +262,7 @@ void opcontrol() {
             arm_mode = 0;
         }
 
-        int modes[5] = {2, 56, 450, 695};
+        int modes[5] = {2, 56, 455, 695};
         
         if (arm_mode == 0) {
             arm.brake();
@@ -283,6 +277,7 @@ void opcontrol() {
             arm_difference = arm_target - arm_angle;
             arm_speed = arm_kP * arm_difference;
 
+            // Check minimum speed
             if (arm_speed < min_arm_speed && arm_speed > 0) {
                 arm_speed = min_arm_speed;
             } else if (arm_speed > -min_arm_speed && arm_speed < 0) {
