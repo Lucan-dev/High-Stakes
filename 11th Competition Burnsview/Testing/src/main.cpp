@@ -5,9 +5,11 @@
 #include "pros/misc.h"
 #include "pros/misc.hpp"
 #include "pros/motors.h"
+#include "pros/optical.hpp"
 #include "pros/rtos.hpp"
 #include <cstddef>
 #include <cstdio>
+#include <iostream>
 #include "main.h"
 
 /* ------------------------------- Controller ------------------------------- */
@@ -21,9 +23,10 @@ pros::Motor intake(-13, pros::MotorGearset::blue);
 pros::MotorGroup arm({-6, 7}, pros::MotorGearset::red);
 
 /* --------------------------------- Sensors -------------------------------- */
-pros::IMU inertial(20);
 pros::Rotation arm_rotation(5);
 pros::Rotation vert(14);
+pros::Optical color_sensor(19);
+pros::IMU inertial(20);
 
 /* --------------------------------- Pistons -------------------------------- */
 pros::adi::DigitalOut clamp('B');
@@ -86,44 +89,12 @@ lemlib::Chassis chassis(
 /* -------------------------------- Global Variables ------------------------------- */
 bool clamp_down = false;
 bool sweeper_down = false;
+// Sort modes can be "red", "blue", or "none"
+std::string detected_color = "none";
+std::string color_to_eject = "red";
 
-void initialize() {
-	/* ----------------------------- Motor Stopping ----------------------------- */
-	left_drive.set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
-    right_drive.set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
-
-    intake.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-    arm.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
-
-    /* ---------------------------------- Setup --------------------------------- */
-    pros::lcd::initialize();
-    chassis.calibrate();
-    arm_rotation.set_position(0);
-
-    /* -------------------------- Display Data on Brain ------------------------- */
-    int arm_angle;
-
-    pros::Task screen_task([&]() {
-
-        while (true) {
-            arm_angle = arm_rotation.get_position() / 100;
-
-            pros::lcd::print(0, "X: %f", chassis.getPose().x);
-            pros::lcd::print(1, "Y: %f", chassis.getPose().y);
-            pros::lcd::print(2, "Theta: %f", chassis.getPose().theta);
-            pros::lcd::print(3, "Arm Angle: %d", arm_angle);
-
-            pros::delay(20);
-        }
-    });
-}
-
-void disabled() {}
-
-void competition_initialize() {}
-
-/* ------------------------------ Arm Functions ----------------------------- */
-void arm_to(int target, int timeout, float arm_kP = 0.5, int max_speed = 127, int min_speed = 8) {
+/* ---------------------------- Custom Functions ---------------------------- */
+void armTo(int target, int timeout, float arm_kP = 0.5, int max_speed = 127, int min_speed = 8) {
     int arm_speed;
     int arm_range = 1;
     int arm_range_timeout = 100;
@@ -183,10 +154,83 @@ void arm_to(int target, int timeout, float arm_kP = 0.5, int max_speed = 127, in
     arm.brake();
 }
 
+int hue;
+int proximity;
+
+void checkColor() {
+    hue = color_sensor.get_hue();
+    proximity = color_sensor.get_proximity();
+
+    if (hue >= 0 && hue <= 30) {
+        detected_color = "red";
+        //controller.set_text(0, 0, "red");
+
+    } else if (hue >= 200 && hue <= 250) {
+        detected_color = "blue";
+        //controller.set_text(0, 0, "blue");
+
+    } else {
+        detected_color = "none";
+    }
+}
+
+void colorSort() {
+    while (true) {
+        checkColor();
+
+        if (detected_color == color_to_eject) {
+            pros::delay(95);
+            intake.move(-20);
+            pros::delay(300);
+        } else {
+            intake.move(120);
+        }
+
+        pros::delay(10);
+    }
+}
+
+void initialize() {
+	/* ----------------------------- Motor Stopping ----------------------------- */
+	left_drive.set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
+    right_drive.set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
+
+    intake.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+    arm.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
+
+    /* ---------------------------------- Setup --------------------------------- */
+    pros::lcd::initialize();
+    chassis.calibrate();
+
+    arm_rotation.set_position(0);
+    color_sensor.set_led_pwm(100);
+
+    /* -------------------------- Display Data on Brain ------------------------- */
+    int arm_angle;
+
+    pros::Task screen_task([&]() {
+
+        while (true) {
+            arm_angle = arm_rotation.get_position() / 100;
+
+            pros::lcd::print(0, "X: %f", chassis.getPose().x);
+            pros::lcd::print(1, "Y: %f", chassis.getPose().y);
+            pros::lcd::print(2, "Theta: %f", chassis.getPose().theta);
+            pros::lcd::print(3, "Arm Angle: %d", arm_angle);
+
+            pros::delay(20);
+        }
+    });
+}
+
+void disabled() {}
+
+void competition_initialize() {}
+
 void autonomous() {
-    arm_to(56, 1000);
-    arm_to(450, 2000);
-    arm_to(2, 1000);
+    clamp.set_value(true);
+    pros::delay(200);
+    pros::Task colorSorting(colorSort);
 }
 
 void opcontrol() {
@@ -198,10 +242,11 @@ void opcontrol() {
     int arm_mode = 0;
     int arm_target;
     int arm_speed;
-    int min_arm_speed = 7;
+    int min_arm_speed = 8;
 
     float arm_angle = 0;
-    float arm_kP = 0.55;
+    float arm_kP = 0.6;
+    float arm_kD = 15;
     float arm_difference;
 
     // loop forever
@@ -278,10 +323,15 @@ void opcontrol() {
             arm_speed = arm_kP * arm_difference;
 
             // Check minimum speed
-            if (arm_speed < min_arm_speed && arm_speed > 0) {
+            if (arm_speed < min_arm_speed + arm_kD && arm_speed > 0) {
                 arm_speed = min_arm_speed;
-            } else if (arm_speed > -min_arm_speed && arm_speed < 0) {
+
+            } else if (arm_speed > -min_arm_speed - arm_kD && arm_speed < 0) {
                 arm_speed = -min_arm_speed;
+            }
+
+            if (arm_difference <=  2 && arm_difference >= -2) {
+                arm_speed = 0;
             }
 
             arm.move(arm_speed);
