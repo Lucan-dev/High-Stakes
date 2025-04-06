@@ -24,7 +24,7 @@ pros::MotorGroup arm({-6, 7}, pros::MotorGearset::red);
 
 /* --------------------------------- Sensors -------------------------------- */
 pros::Rotation arm_rotation(5);
-pros::Rotation vert(14);
+pros::Rotation vert(-14);
 pros::Optical color_sensor(19);
 pros::IMU inertial(20);
 
@@ -33,13 +33,13 @@ pros::adi::DigitalOut clamp('B');
 pros::adi::DigitalOut sweeper('A');
 
 /* ----------------------------- Tracking Wheels ---------------------------- */
-lemlib::TrackingWheel vert_wheel(&vert, lemlib::Omniwheel::NEW_2, -0.5);
+lemlib::TrackingWheel vert_wheel(&vert, lemlib::Omniwheel::NEW_2, 0.5);
 
 /* ---------------------------- Drivetrain Setup ---------------------------- */
 lemlib::Drivetrain drivetrain(
 	&left_drive,
     &right_drive,
-    10,
+    10.375,
     lemlib::Omniwheel::NEW_275,
     450,
     2
@@ -55,9 +55,9 @@ lemlib::OdomSensors sensors(
 
 /* ---------------------------------- PIDs ---------------------------------- */
 lemlib::ControllerSettings lateral_controller(
-    7,
+    7.5,
     0,
-    12,
+    10,
     3,
     1,
     100,
@@ -89,9 +89,10 @@ lemlib::Chassis chassis(
 /* -------------------------------- Global Variables ------------------------------- */
 bool clamp_down = false;
 bool sweeper_down = false;
+
 // Sort modes can be "red", "blue", or "none"
 std::string detected_color = "none";
-std::string color_to_eject = "red";
+std::string color_to_eject = "blue";
 
 /* ---------------------------- Custom Functions ---------------------------- */
 void armTo(int target, int timeout, float arm_kP = 0.5, int max_speed = 127, int min_speed = 8) {
@@ -163,11 +164,9 @@ void checkColor() {
 
     if (hue >= 0 && hue <= 30) {
         detected_color = "red";
-        //controller.set_text(0, 0, "red");
 
     } else if (hue >= 200 && hue <= 250) {
         detected_color = "blue";
-        //controller.set_text(0, 0, "blue");
 
     } else {
         detected_color = "none";
@@ -179,9 +178,9 @@ void colorSort() {
         checkColor();
 
         if (detected_color == color_to_eject) {
-            pros::delay(95);
-            intake.move(-20);
-            pros::delay(300);
+            pros::delay(90);
+            intake.move(-70);
+            pros::delay(250);
         } else {
             intake.move(120);
         }
