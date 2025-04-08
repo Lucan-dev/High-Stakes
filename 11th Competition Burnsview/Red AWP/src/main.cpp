@@ -95,7 +95,7 @@ std::string detected_color = "none";
 std::string color_to_eject = "blue";
 
 /* ---------------------------- Custom Functions ---------------------------- */
-void armTo(int target, int timeout, float arm_kP = 0.5, int max_speed = 127, int min_speed = 8) {
+void armTo(int target, int timeout = 1000, float arm_kP = 0.5, int max_speed = 127, int min_speed = 8) {
     int arm_speed;
     int arm_range = 1;
     int arm_range_timeout = 100;
@@ -189,6 +189,9 @@ void colorSort() {
     }
 }
 
+// Set color sorting task to nothing
+pros::Task* colorSorter = nullptr;
+
 void initialize() {
 	/* ----------------------------- Motor Stopping ----------------------------- */
 	left_drive.set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
@@ -201,7 +204,9 @@ void initialize() {
     pros::lcd::initialize();
     chassis.calibrate();
 
+    arm_rotation.reset_position();
     arm_rotation.set_position(0);
+
     color_sensor.set_led_pwm(100);
 
     /* -------------------------- Display Data on Brain ------------------------- */
@@ -227,9 +232,62 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() {
+    // Setup
+    chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
+    arm_rotation.set_position(57 * 100);
+
+    // Alliance Stake
+    armTo(605, 800, 0.6, 127, 8);
+    chassis.moveToPoint(0, -6, 1000);
+    chassis.waitUntil(4);
+    armTo(2);
+
+    // Mobile Goal
+    chassis.turnToPoint(28.5, -26.5, 800, {.forwards = false});
+    chassis.moveToPoint(28.5, -26.5, 1500, {.forwards = false, .maxSpeed = 60});
+    chassis.waitUntilDone();
     clamp.set_value(true);
+
+    // Top ring on double stack
+    chassis.turnToPoint(22, -1.5, 800);
+    chassis.moveToPoint(22, -1.5, 1200, {.maxSpeed = 60});
+
+    pros::Task color_sort_task(colorSort);
+    sweeper.set_value(true);
+
+    chassis.waitUntilDone();
+    sweeper.set_value(false);
+    pros::delay(400);
+
+    // 2nd ring
+    chassis.moveToPoint(24, -12, 900, {.forwards = false, .maxSpeed = 30});
+
+    chassis.turnToPoint(17, -44, 800);
+    chassis.moveToPoint(17, -44, 800, {.maxSpeed = 100});
+
+    // 3rd ring
+    chassis.moveToPoint(18.5, -28.5, 800, {.forwards = false});
+    
+    chassis.turnToPoint(-25.5, -42, 800);
+    chassis.moveToPoint(-15.5, -38, 800);
+    chassis.moveToPoint(-25.5, -42, 800, {.maxSpeed = 60});
+
+    // Touch bar
+    chassis.waitUntilDone();
     pros::delay(200);
-    pros::Task colorSorting(colorSort);
+    chassis.moveToPoint(43, -24.5, 5000, {.forwards = false});
+    chassis.waitUntil(30);
+    color_sort_task.remove();
+    intake.brake();
+    armTo(110);
+
+    chassis.waitUntilDone();
+    clamp_down = true;
+
+    // For Testing
+    // chassis.waitUntilDone();
+    // pros::delay(500);
+    // chassis.setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
 }
 
 void opcontrol() {
