@@ -29,8 +29,9 @@ pros::Optical color_sensor(19);
 pros::IMU inertial(20);
 
 /* --------------------------------- Pistons -------------------------------- */
-pros::adi::DigitalOut clamp('B');
 pros::adi::DigitalOut sweeper('A');
+pros::adi::DigitalOut intake_lift('B');
+pros::adi::DigitalOut clamp('C');
 
 /* ----------------------------- Tracking Wheels ---------------------------- */
 lemlib::TrackingWheel vert_wheel(&vert, lemlib::Omniwheel::NEW_2, 0.5);
@@ -217,10 +218,10 @@ void initialize() {
         while (true) {
             arm_angle = arm_rotation.get_position() / 100;
 
-            pros::lcd::print(0, "X: %f", chassis.getPose().x);
-            pros::lcd::print(1, "Y: %f", chassis.getPose().y);
-            pros::lcd::print(2, "Theta: %f", chassis.getPose().theta);
-            pros::lcd::print(3, "Arm Angle: %d", arm_angle);
+            pros::lcd::print(2, "X: %f", chassis.getPose().x);
+            pros::lcd::print(3, "Y: %f", chassis.getPose().y);
+            pros::lcd::print(4, "Theta: %f", chassis.getPose().theta);
+            pros::lcd::print(5, "Arm Angle: %d", arm_angle);
 
             pros::delay(20);
         }
@@ -249,17 +250,46 @@ void autonomous() {
     clamp.set_value(true);
 
     // Line Rings
-    chassis.turnToPoint(-35.5, -49.5, 800);
+    chassis.turnToPoint(-32.5, -50, 800);
     pros::Task color_sort_task(colorSort);
-    chassis.moveToPoint(-35.5, -49.5, 1000);
+    chassis.moveToPoint(-32.5, -50, 1000);
 
-    // color_sort_task.remove();
-    // intake.brake();
+    chassis.turnToPoint(-30, -58.5, 800);
+    chassis.moveToPoint(-30, -58.5, 1000);
+
+    // 3rd Ring
+    chassis.moveToPoint(-33, -46.5, 800, {.forwards = false});
+    
+    chassis.turnToPoint(-24, -48.5, 800);
+    chassis.moveToPoint(-24, -48.5, 1000);
+
+    // 4th Ring
+    chassis.turnToPoint(-20, -5, 800);
+    chassis.moveToPoint(-20, -5, 1500, {.maxSpeed = 90});
+    intake_lift.set_value(true);
+
+    chassis.waitUntilDone();
+    intake_lift.set_value(false);
+    pros::delay(200);
+
+    // Touch Bar
+    chassis.moveToPoint(-24, -29.5, 1500, {.forwards = false});
+    chassis.waitUntilDone();
+    pros::delay(400);
+
+    chassis.turnToPoint(-44, -27, 800, {.forwards = false});
+
+    color_sort_task.remove();
+    intake.brake();
+    armTo(110);
+    clamp_down = true;
+
+    chassis.moveToPoint(-44, -27, 1000, {.forwards = false});
 
     // For Testing
-    chassis.waitUntilDone();
-    pros::delay(500);
-    chassis.setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
+    // chassis.waitUntilDone();
+    // pros::delay(500);
+    // chassis.setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
 }
 
 void opcontrol() {

@@ -282,7 +282,6 @@ void autonomous() {
     intake.brake();
     armTo(110);
 
-    chassis.waitUntilDone();
     clamp_down = true;
 
     // For Testing
