@@ -179,9 +179,9 @@ void colorSort() {
         checkColor();
 
         if (detected_color == color_to_eject) {
-            pros::delay(90);
-            intake.move(-70);
-            pros::delay(250);
+            pros::delay(85);
+            intake.move(-60);
+            pros::delay(200);
         } else {
             intake.move(120);
         }
@@ -239,13 +239,19 @@ void autonomous() {
 
     // Alliance Stake
     armTo(605, 800, 0.6, 127, 8);
-    chassis.moveToPoint(0, -6, 1000);
-    chassis.waitUntil(4);
-    armTo(2);
+    //chassis.moveToPoint(0, -6, 1000);
+    
 
     // Mobile Goal
-    chassis.turnToPoint(-28.5, -26.5, 800, {.forwards = false});
-    chassis.moveToPoint(-28.5, -26.5, 1500, {.forwards = false, .maxSpeed = 60});
+    //chassis.turnToPoint(-28.5, -26.5, 800, {.forwards = false});
+    chassis.moveToPoint(-28.5, -26.5, 1600, {
+        .forwards = false,
+        .maxSpeed = 70,
+        .minSpeed = 15
+    });
+
+    chassis.waitUntil(5);
+    armTo(2);
     chassis.waitUntilDone();
     clamp.set_value(true);
 
@@ -254,39 +260,31 @@ void autonomous() {
     pros::Task color_sort_task(colorSort);
     chassis.moveToPoint(-32.5, -50, 1000);
 
-    chassis.turnToPoint(-30, -58.5, 800);
-    chassis.moveToPoint(-30, -58.5, 1000);
+    //chassis.turnToPoint(-30, -58.5, 800);
+    chassis.moveToPoint(-29, -59, 1000);
 
     // 3rd Ring
-    chassis.moveToPoint(-33, -46.5, 800, {.forwards = false});
+    chassis.moveToPoint(-33, -46.5, 800, {.forwards = false, .minSpeed = 40});
     
-    chassis.turnToPoint(-24, -48.5, 800);
-    chassis.moveToPoint(-24, -48.5, 1000);
+    chassis.turnToPoint(-24, -48.5, 800, {.minSpeed = 10});
+    chassis.moveToPoint(-24, -48.5, 1000, {.minSpeed = 40});
 
     // Corner Ring
-    chassis.turnToPoint(6.3, -37, 800);
-    chassis.moveToPoint(6.3, -37, 1000);
+    chassis.turnToPoint(6.3, -37, 800, {.minSpeed = 10});
+    chassis.moveToPoint(6.3, -37, 1000, {.minSpeed = 40});
 
-    chassis.turnToPoint(25.5, -41, 800);
-    chassis.moveToPoint(2.5, -41, 800);
+    chassis.turnToPoint(25.5, -41, 800, {.minSpeed = 10});
+    chassis.moveToPoint(25.5, -41, 800);
 
+    // 5th Ring
+    chassis.moveToPoint(7, -36, 800, {.forwards = false, .minSpeed = 40});
 
+    chassis.turnToPoint(-11, -6.5, 800, {.minSpeed = 10});
+    chassis.moveToPoint(-11, -6.5, 1000, {.minSpeed = 120, .earlyExitRange = 10});
+    chassis.moveToPoint(-28.5, 23.5, 2000, {.maxSpeed = 20});
 
-    // // 4th Ring
-    // chassis.turnToPoint(-20, -5, 800);
-    // chassis.moveToPoint(-20, -5, 1500, {.maxSpeed = 90});
-    // intake_lift.set_value(true);
-
-    // chassis.waitUntilDone();
-    // intake_lift.set_value(false);
-    // pros::delay(200);
-
-    // color_sort_task.remove();
-    // intake.brake();
-    // armTo(110);
-    // clamp_down = true;
-
-    // chassis.moveToPoint(-44, -27, 1000, {.forwards = false});
+    // Ending
+    clamp_down = true;
 
     // For Testing
     chassis.waitUntilDone();
@@ -309,6 +307,11 @@ void opcontrol() {
     float arm_kP = 0.6;
     float arm_kD = 15;
     float arm_difference;
+
+    // Incase auto sort didn't derminate during auton
+    if (colorSorter != nullptr) {
+        delete colorSorter;
+    }
 
     // loop forever
     while (true) {
