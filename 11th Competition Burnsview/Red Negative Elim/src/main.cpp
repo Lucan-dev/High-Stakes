@@ -179,7 +179,7 @@ void colorSort() {
         checkColor();
 
         if (detected_color == color_to_eject) {
-            pros::delay(85);
+            pros::delay(88);
             intake.move(-60);
             pros::delay(200);
         } else {
@@ -189,9 +189,6 @@ void colorSort() {
         pros::delay(10);
     }
 }
-
-// Set color sorting task to nothing
-pros::Task* colorSorter = nullptr;
 
 void initialize() {
 	/* ----------------------------- Motor Stopping ----------------------------- */
@@ -232,6 +229,9 @@ void disabled() {}
 
 void competition_initialize() {}
 
+// Create color sort task in a global scope
+pros::Task* color_sort_task = nullptr;
+
 void autonomous() {
     // Setup
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
@@ -239,11 +239,6 @@ void autonomous() {
 
     // Alliance Stake
     armTo(605, 800, 0.6, 127, 8);
-    //chassis.moveToPoint(0, -6, 1000);
-    
-
-    // Mobile Goal
-    //chassis.turnToPoint(-28.5, -26.5, 800, {.forwards = false});
     chassis.moveToPoint(-28.5, -26.5, 1600, {
         .forwards = false,
         .maxSpeed = 70,
@@ -257,7 +252,8 @@ void autonomous() {
 
     // Line Rings
     chassis.turnToPoint(-32.5, -50, 800);
-    pros::Task color_sort_task(colorSort);
+    // pros::Task color_sort_task(colorSort);
+    color_sort_task = new pros::Task(colorSort);
     chassis.moveToPoint(-32.5, -50, 1000);
 
     //chassis.turnToPoint(-30, -58.5, 800);
@@ -287,9 +283,9 @@ void autonomous() {
     clamp_down = true;
 
     // For Testing
-    chassis.waitUntilDone();
-    pros::delay(500);
-    chassis.setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
+    // chassis.waitUntilDone();
+    // pros::delay(500);
+    // chassis.setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
 }
 
 void opcontrol() {
@@ -308,9 +304,12 @@ void opcontrol() {
     float arm_kD = 15;
     float arm_difference;
 
-    // Incase auto sort didn't derminate during auton
-    if (colorSorter != nullptr) {
-        delete colorSorter;
+    // Remove color sort task if it was running during auton
+    if (color_sort_task != nullptr) {
+        color_sort_task->remove();
+        delete color_sort_task;
+        color_sort_task = nullptr;
+        intake.brake();
     }
 
     // loop forever
