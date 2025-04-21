@@ -263,21 +263,52 @@ void autonomous() {
     chassis.moveToPoint(-32.5, -50, 1000);
     color_sort_task = new pros::Task(colorSort);
 
-    chassis.moveToPoint(-29, -59, 1000);
+    chassis.moveToPoint(-28.5, -62, 1500, {.maxSpeed = 100});
 
     // 3rd Ring
-    chassis.moveToPoint(-33, -46.5, 800, {.forwards = false, .minSpeed = 40});
-    
-    chassis.turnToPoint(-24, -48.5, 800, {.minSpeed = 10});
-    chassis.moveToPoint(-24, -48.5, 1000, {.minSpeed = 40});
+    chassis.moveToPoint(-32, -34, 1000, {
+        .forwards = false, 
+        .maxSpeed = 100
+    });
 
-    // Ending
+    chassis.turnToPoint(-16.5, -47, 800);
+    chassis.moveToPoint(-16.5, -47, 1000);
+
+    // 2nd Goal
+    chassis.turnToPoint(-34, 17.5, 800);
+    chassis.moveToPoint(-34, 17.5, 2000, {.maxSpeed = 100});
+    chassis.waitUntil(30);
+    clamp.set_value(false);
+
+    chassis.turnToPoint(-49, 15, 800, {.forwards = false});
+    chassis.moveToPoint(-49, 15, 1200, {.forwards = false, .maxSpeed = 60});
+    remove_color_sort_task();
+    intake.brake();
+
+    chassis.waitUntilDone();
+    clamp.set_value(true);
+
+    // 4th Ring
+    pros::delay(200);
+    chassis.turnToPoint(-61.5, 32.5, 800);
+    chassis.moveToPoint(-61.5, 32.5, 1000);
+    color_sort_task = new pros::Task(colorSort);
+
+    // Touch Bar
+    chassis.turnToPoint(-55, -0.5, 1000, {.forwards = false});
+    chassis.waitUntilDone();
     clamp_down = true;
 
-    // For Testing
+    armTo(110);
+    chassis.moveToPoint(-55, -0.5, 1000, {.forwards = false});
     chassis.waitUntilDone();
-    pros::delay(500);
-    chassis.setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
+    remove_color_sort_task();
+    intake.brake();
+
+    // For Testing
+    // chassis.waitUntilDone();
+    // pros::delay(500);
+    // chassis.setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
 }
 
 void opcontrol() {
