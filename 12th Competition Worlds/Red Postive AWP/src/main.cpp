@@ -241,7 +241,7 @@ void competition_initialize() {}
 void autonomous() {
     // Setup
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
-    arm_rotation.set_position(57 * 100);
+    arm_rotation.set_position(53 * 100);
 
     // Alliance Stake
     armTo(605, 800, 0.6, 127, 8);
