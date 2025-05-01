@@ -191,7 +191,13 @@ void colorSort() {
 }
 
 // Set color sorting task to nothing
-pros::Task* colorSorter = nullptr;
+pros::Task* color_sort_task = nullptr;
+
+void remove_color_sort_task() {
+    color_sort_task->remove();
+    delete color_sort_task;
+    color_sort_task = nullptr;
+}
 
 void initialize() {
 	/* ----------------------------- Motor Stopping ----------------------------- */
@@ -239,26 +245,32 @@ void autonomous() {
 
     // Alliance Stake
     armTo(605, 800, 0.6, 127, 8);
-    chassis.moveToPoint(0, -6, 1000);
-    chassis.waitUntil(4);
-    armTo(2);
+    chassis.moveToPoint(0, -6, 800, {.forwards = false});
 
     // Mobile Goal
-    chassis.turnToPoint(28.5, -26.5, 800, {.forwards = false});
-    chassis.moveToPoint(28.5, -26.5, 1500, {.forwards = false, .maxSpeed = 60});
+    chassis.moveToPoint(28.5, -26.5, 1600, {
+        .forwards = false,
+        .maxSpeed = 70,
+        .minSpeed = 15
+    });
+
+    chassis.waitUntil(10);
+    armTo(2);
+
     chassis.waitUntilDone();
     clamp.set_value(true);
 
     // Top ring on double stack
+    pros::delay(200);
     chassis.turnToPoint(22, -1.5, 800);
     chassis.moveToPoint(22, -1.5, 1200, {.maxSpeed = 60});
 
-    pros::Task color_sort_task(colorSort);
+    color_sort_task = new pros::Task(colorSort);
     intake_lift.set_value(true);
 
     chassis.waitUntilDone();
     intake_lift.set_value(false);
-    pros::delay(400);
+    pros::delay(200);
 
     // 2nd ring
     chassis.moveToPoint(24, -12, 900, {.forwards = false, .maxSpeed = 30});
@@ -267,18 +279,19 @@ void autonomous() {
     chassis.moveToPoint(17, -44, 800, {.maxSpeed = 100});
 
     // 3rd ring
-    chassis.moveToPoint(18.5, -28.5, 800, {.forwards = false});
+    chassis.moveToPose(-27, -45.5, -68.5, 2000, {.minSpeed = 100});
+    // chassis.moveToPoint(18.5, -28.5, 800, {.forwards = false});
     
-    chassis.turnToPoint(-25.5, -42, 800);
-    chassis.moveToPoint(-15.5, -38, 800);
-    chassis.moveToPoint(-25.5, -42, 800, {.maxSpeed = 60});
+    // chassis.turnToPoint(-25.5, -42, 800);
+    // chassis.moveToPoint(-15.5, -38, 800);
+    // chassis.moveToPoint(-25.5, -42, 800, {.maxSpeed = 60});
 
     // Touch bar
     chassis.waitUntilDone();
     pros::delay(200);
     chassis.moveToPoint(43, -24.5, 5000, {.forwards = false});
     chassis.waitUntil(30);
-    color_sort_task.remove();
+    remove_color_sort_task();
     intake.brake();
     armTo(110);
 
@@ -305,6 +318,12 @@ void opcontrol() {
     float arm_kP = 0.6;
     float arm_kD = 15;
     float arm_difference;
+
+    // Remove color sort task if it was running during auton
+    if (color_sort_task != nullptr) {
+        remove_color_sort_task();
+        intake.brake();
+    }
 
     // loop forever
     while (true) {
