@@ -318,6 +318,12 @@ void opcontrol() {
     float arm_kD = 15;
     float arm_difference;
 
+    // Remove color sort task if it was running during auton
+    if (color_sort_task != nullptr) {
+        remove_color_sort_task();
+        intake.brake();
+    }
+
     // loop forever
     while (true) {
         /* --------------------------- Drivetrain Control --------------------------- */
