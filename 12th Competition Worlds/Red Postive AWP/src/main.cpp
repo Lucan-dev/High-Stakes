@@ -293,8 +293,6 @@ void autonomous() {
     intake.brake();
     armTo(110);
 
-    clamp_down = true;
-
     // For Testing
     // chassis.waitUntilDone();
     // pros::delay(500);
