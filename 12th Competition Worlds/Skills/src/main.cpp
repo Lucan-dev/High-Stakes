@@ -193,6 +193,12 @@ void colorSort() {
 // Set color sorting task to nothing
 pros::Task* color_sort_task = nullptr;
 
+void remove_color_sort_task() {
+    color_sort_task->remove();
+    delete color_sort_task;
+    color_sort_task = nullptr;
+}
+
 void initialize() {
 	/* ----------------------------- Motor Stopping ----------------------------- */
 	left_drive.set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
@@ -266,8 +272,8 @@ void autonomous() {
     armTo(56);
 
     // Wall Stake
-    chassis.turnToPoint(46.5, 65, 1000);
-    chassis.moveToPoint(46.5, 65, 1000);
+    chassis.turnToPoint(47, 65, 1000);
+    chassis.moveToPoint(47, 65, 1000);
 
     chassis.turnToPoint(66, 66, 800);
 
@@ -332,9 +338,9 @@ void autonomous() {
     chassis.turnToPoint(-45, 62.5, 800);
     chassis.moveToPoint(-45, 62.5, 1100);
 
-    chassis.turnToPoint(-62, 62, 800);
+    chassis.turnToPoint(-63, 62, 800);
 
-    chassis.moveToPoint(-62, 62, 1200);
+    chassis.moveToPoint(-63, 62, 1200);
     chassis.waitUntilDone();
     intake.brake();
     armTo(470, 1000, 0.7, 127, 8);
@@ -363,47 +369,76 @@ void autonomous() {
     chassis.moveToPoint(-28, 82, 2000);
     chassis.waitUntil(20);
     intake.move(127);
-    armTo(56);
 
     // 3rd Goal in Corner
     chassis.turnToPoint(-22, 114, 800);
+    pros::delay(200);
+    intake.brake();
     chassis.moveToPoint(-22, 114, 1200);
 
     chassis.swingToHeading(-64, lemlib::DriveSide::LEFT, 1200);
-    chassis.moveToPoint(-53, 127.5, 1000);
+    chassis.moveToPoint(-54, 127.5, 1500);
 
     // 4th Goal
     chassis.turnToPoint(0, 111, 800, {.forwards = false});
-    intake_lift.set_value(true);
     chassis.moveToPoint(0, 111, 2500, {.forwards = false, .maxSpeed = 60});
 
     chassis.waitUntilDone();
     clamp.set_value(true);
-    intake_lift.set_value(false);
 
-    // Blue Alliance Stake
+    // 2st Ring
     pros::delay(200);
-    chassis.turnToHeading(0, 800);
-    chassis.moveToPoint(0, 128, 900);
 
-    chassis.moveToPoint(0, 117.5, 800, {.forwards = false});
-    chassis.turnToPoint(0, 128, 300);
-    
-    chassis.waitUntilDone();
-    intake.brake();
-    armTo(605);
-
-    // 1st Ring
     chassis.moveToPoint(0, 111, 800, {.forwards = false});
     chassis.turnToPoint(-47, 111, 800);
     chassis.moveToPoint(-47, 111, 2000);
-    armTo(2);
+
     color_sort_task = new pros::Task(colorSort);
+
+    // 3rd Ring
+    chassis.turnToPoint(-4.5, 62.5, 1000);
+    chassis.moveToPoint(-4.5, 62.5, 2000);
+
+    // 4th and 5th Rings
+    chassis.turnToPoint(45.5, 104.2, 800);
+    chassis.moveToPoint(45.5, 104.2, 4000, {.maxSpeed = 60});
+
+    // 6th Ring
+    chassis.turnToPoint(63, 109, 800);
+    chassis.moveToPoint(63, 109, 1000);
+
+    // Place 4th Goal in Corner
+    chassis.moveToPoint(59, 110, 800, {.forwards = false});
+    chassis.turnToPoint(66, 115.5, 1000, {
+        .forwards = false, .direction = lemlib::AngularDirection::CCW_COUNTERCLOCKWISE
+    });
+    pros::delay(20);
+    sweeper.set_value(true);
+
+    chassis.moveToPoint(66, 115.5, 1000, {.forwards = false});
+    sweeper.set_value(false);
+    remove_color_sort_task();
+    intake.move(-40);
+
+    chassis.waitUntilDone();
+    intake.brake();
+    clamp.set_value(false);
+
+    // Hang
+    pros::delay(200);
+    chassis.moveToPoint(26, 83.5, 1000);
+    armTo(450);
+
+    chassis.turnToPoint(13, 73, 800, {.forwards = false});
+    chassis.moveToPoint(13, 73, 1000, {.forwards = false, .maxSpeed = 60});
+    chassis.moveToPoint(27, 86, 1000, {.maxSpeed = 20});
+    chassis.setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
 
     // For Testing
     chassis.waitUntilDone();
-    pros::delay(500);
+    pros::delay(1000);
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
+    remove_color_sort_task();
     intake.brake();
 }
 
