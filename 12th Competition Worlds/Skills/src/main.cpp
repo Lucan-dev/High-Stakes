@@ -268,7 +268,7 @@ void autonomous() {
 
     // Wall Stake Ring
     chassis.moveToPoint(49, 85, 1500);
-    chassis.waitUntil(40);
+    chassis.waitUntil(50);
     armTo(56);
 
     // Wall Stake
@@ -331,7 +331,7 @@ void autonomous() {
 
     // 2nd Wallstake Ring
     chassis.moveToPoint(-44.5, 81, 1500);
-    chassis.waitUntil(40);
+    chassis.waitUntil(50);
     armTo(56);
 
     // 2nd Wall Stake
@@ -426,12 +426,12 @@ void autonomous() {
 
     // Hang
     pros::delay(200);
-    chassis.moveToPoint(26, 83.5, 1000);
+    chassis.moveToPoint(26, 90, 1000);
     armTo(450);
 
-    chassis.turnToPoint(13, 73, 800, {.forwards = false});
-    chassis.moveToPoint(13, 73, 1000, {.forwards = false, .maxSpeed = 60});
-    chassis.moveToPoint(27, 86, 1000, {.maxSpeed = 20});
+    chassis.turnToPoint(11, 75, 800, {.forwards = false});
+    chassis.moveToPoint(11, 75, 1000, {.forwards = false, .maxSpeed = 60});
+    chassis.moveToPoint(31, 95, 2000, {.maxSpeed = 30});
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
 
     // For Testing

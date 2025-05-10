@@ -244,6 +244,7 @@ void autonomous() {
     arm_rotation.set_position(53 * 100);
 
     // Alliance Stake
+    pros::delay(1500);
     armTo(605, 800, 0.6, 127, 8);
 
     // Mobile Goal
